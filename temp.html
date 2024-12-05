@@ -1,189 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Personal Webpage</title>
-  <style>
-    /* Reset styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Body and main container styles */
-    body {
-      font-family: 'Arial', sans-serif;
-      line-height: 1.6;
-      background-color: #f4f4f9;
-      color: #333;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      text-align: center;
-      background-color: #3498db;
-      color: white;
-      padding: 30px;
-      border-radius: 8px;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-    }
-
-    /* Highlight links */
-    a {
-      color: #3498db;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* About Me section */
-    .about-me {
-      margin-top: 40px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .about-me .photo {
-      flex: 1;
-      max-width: 250px;
-      margin-right: 20px;
-      border-radius: 50%;
-      overflow: hidden;
-    }
-
-    .about-me .photo img {
-      width: 100%;
-      height: auto;
-    }
-
-    .about-me .content {
-      flex: 2;
-      max-width: 750px;
-    }
-
-    .about-me h2 {
-      color: #3498db;
-      font-size: 2rem;
-    }
-
-    .about-me p {
-      font-size: 1rem;
-      margin-bottom: 20px;
-    }
-
-    /* Publications list */
-    .publications {
-      margin-top: 40px;
-    }
-
-    .publications h3 {
-      color: #3498db;
-      font-size: 1.8rem;
-    }
-
-    .publications ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .publications li {
-      background-color: #ffffff;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Personal section */
-    .personal {
-      margin-top: 40px;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .personal h3 {
-      color: #3498db;
-      font-size: 1.8rem;
-    }
-
-    /* Media Query for responsiveness */
-    @media (max-width: 768px) {
-      header h1 {
-        font-size: 2rem;
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Webpage</title>
+    <style>
+      /* Reset styles */
+      * {
+	  margin: 0;
+	  padding: 0;
+	  box-sizing: border-box;
       }
 
+      /* Body and main container styles */
+      body {
+	  font-family: 'Arial', sans-serif;
+	  line-height: 1.6;
+	  background-color: #f4f4f9;
+	  color: #333;
+      }
+
+      .container {
+	  max-width: 1200px;
+	  margin: 0 auto;
+	  padding: 20px;
+      }
+
+      header {
+	  text-align: center;
+	  background-color: #f5b888;
+	  /* background-color: #3498db; */
+	  color: white;
+	  padding: 30px;
+	  border-radius: 8px;
+      }
+
+      header h1 {
+	  font-size: 2.5rem;
+      }
+
+      header a {
+	  color: white;
+	  text-decoration: none;
+	  margin: 0 10px;
+	  font-weight: bold;
+	  transition: color 0.3s ease;
+      }
+
+      header a:hover {
+	  color: #f1c40f;
+	  text-decoration: underline;
+      }
+
+      /* Highlight links */
+      a {
+	  color: #3498db;
+	  text-decoration: none;
+	  font-weight: bold;
+      }
+
+      a:hover {
+	  text-decoration: underline;
+      }
+
+      /* About Me section */
       .about-me {
-        flex-direction: column;
-        align-items: center;
+	  margin-top: 40px;
+	  display: flex;
+	  flex-wrap: wrap;
+	  justify-content: space-between;
       }
 
       .about-me .photo {
-        margin-bottom: 20px;
-        max-width: 200px;
+	  flex: 1;
+	  max-width: 250px;
+	  margin-right: 20px;
+	  border-radius: 50%;
+	  overflow: hidden;
+      }
+
+      .about-me .photo img {
+	  width: 100%;
+	  height: auto;
+      }
+
+      .about-me .content {
+	  flex: 2;
+	  max-width: 750px;
+      }
+
+      .about-me h2 {
+	  color: #3498db;
+	  font-size: 2rem;
+      }
+
+      .about-me p {
+	  font-size: 1rem;
+	  margin-bottom: 20px;
+      }
+
+      /* Publications list */
+      .publications {
+	  margin-top: 40px;
+      }
+
+      .publications h3 {
+	  color: #3498db;
+	  font-size: 1.8rem;
       }
 
       .publications ul {
-        padding-left: 20px;
+	  list-style-type: none;
+	  padding: 0;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <header>
-    <h1>Welcome to My Personal Webpage</h1>
-    <p><a href="https://www.linkedin.com" target="_blank">LinkedIn</a> | <a href="https://www.github.com" target="_blank">GitHub</a> | <a href="mailto:me@example.com">Email</a></p>
-  </header>
+      .publications li {
+	  background-color: #ffffff;
+	  padding: 15px;
+	  margin-bottom: 10px;
+	  border-radius: 8px;
+	  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
 
-  <div class="container">
-    <!-- About Me Section -->
-    <section class="about-me">
-      <div class="photo">
-        <img src="https://via.placeholder.com/250" alt="Personal Photo">
-      </div>
-      <div class="content">
-        <h2>About Me</h2>
-        <p>Hello! I'm John Doe, a passionate software developer and tech enthusiast. I specialize in full-stack web development, particularly working with JavaScript, Python, and cloud technologies. When I'm not coding, I enjoy photography, hiking, and exploring new technologies.</p>
-      </div>
-    </section>
+      /* Personal section */
+      .personal {
+	  margin-top: 40px;
+	  background-color: #ffffff;
+	  padding: 20px;
+	  border-radius: 8px;
+	  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
 
-    <!-- Publications List -->
-    <section class="publications">
-      <h3>Publications</h3>
-      <ul>
-        <li><a href="https://www.example.com" target="_blank">"Understanding Web Development in 2023"</a></li>
-        <li><a href="https://www.example.com" target="_blank">"The Future of Cloud Computing"</a></li>
-        <li><a href="https://www.example.com" target="_blank">"AI and Machine Learning: A New Era"</a></li>
-      </ul>
-    </section>
+      .personal h3 {
+	  color: #3498db;
+	  font-size: 1.8rem;
+      }
 
-    <!-- Personal Section -->
-    <section class="personal">
-      <h3>Personal Projects</h3>
-      <p>I love working on personal projects that push my creativity. Here are a few that I've been working on recently:</p>
-      <ul>
-        <li>Interactive Website Builder</li>
-        <li>AI-based Music Recommendation System</li>
-        <li>Portfolio Website</li>
-      </ul>
-    </section>
-  </div>
+      /* Media Query for responsiveness */
+      @media (max-width: 768px) {
+	  header h1 {
+              font-size: 2rem;
+	  }
 
-</body>
+	  .about-me {
+              flex-direction: column;
+              align-items: center;
+	  }
+
+	  .about-me .photo {
+              margin-bottom: 20px;
+              max-width: 200px;
+	  }
+
+	  .publications ul {
+              padding-left: 20px;
+	  }
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <h1>Sagar Kale</h1>
+      <p>
+	<a href="https://www.linkedin.com/in/sag" target="_blank">LinkedIn</a> |
+	<a href="https://www.github.com/sagark4" target="_blank">GitHub</a> |
+	<a href="#publications">Publications</a> |
+	<a href="#tpm">पायथॉन विचार</a> |
+      </p>
+    </header>
+
+    <div class="container">
+      <!-- About Me Section -->
+      <section class="about-me">
+	<div class="photo">
+          <img src="me2017.jpg" alt="Personal Photo">
+	</div>
+	<div class="content">
+          <p>
+	    <h3> Pronunciation: Sāgar Kālé &nbsp;&nbsp;&nbsp; In Marathi: सागर सुधीर काळे </h3>
+            I am a computer-science teacher and software engineer.
+            <br>
+            <br>
+            <b>Latest: </b> I translated <a href="https://greenteapress.com/wp/think-python-2e/">Allen Downey's amazing book called
+              Think Python</a> into Marathi.
+            <a href="think-python-2e-marathi/index.html">
+              Click here for details.</a>
+            Now you can self-study and learn Python programming in Marathi via this book!
+            <br>
+            <br>
+            More about me: Previously, I completed my Ph.D. in theoretical computer science (algorithms) from Dartmouth
+            College in 2017 and did two postdocs: for two years in EPFL and for 2.67 years at University of Vienna, where I
+            also taught algorithms and discrete math for 5 semesters. And even before that I worked as a software engineer
+            for about 4 years. I have always kept in touch with programming (even when I was doing theory).
+	</div>
+      </section>
+
+      <!-- Publications List -->
+      <section id = "publications" class="publications">
+	<h3>Publications</h3>
+	<ul>
+          <!-- <li><a href="https://www.example.com" target="_blank">"Understanding Web Development in 2023"</a></li> -->
+          <!-- <li><a href="https://www.example.com" target="_blank">"The Future of Cloud Computing"</a></li> -->
+          <!-- <li><a href="https://www.example.com" target="_blank">"AI and Machine Learning: A New Era"</a></li> -->
+	</ul>
+      </section>
+
+      <!-- Personal Section -->
+      <section class="personal">
+	<h3>Personal Projects</h3>
+	<!--      <p>I love working on personal projects that push my creativity. Here are a few that I've been working on recently:</p>
+		  <ul>
+		    <li>Interactive Website Builder</li>
+		    <li>AI-based Music Recommendation System</li>
+		    <li>Portfolio Website</li>
+		  </ul> -->
+      </section>
+      <section id = "tpm" class="personal">
+        <h3>पायथॉन विचार</h3>
+	<br>
+	<h4>शिका संगणक वैज्ञानिकाप्रमाणे विचार करायला
+	  <br>
+	  —मूळ लेखक: ॲलन डाउनी, अनुवाद: सागर सुधीर काळे.</h4>
+	<br>
+	<br>
+	This is a translation of  <a href="https://greenteapress.com/wp/think-python-2e/">Allen Downey's amazing book called Think Python</a> into Marathi.  <a href="think-python-2e-marathi/index.html"> </a>  Now you can self-study and learn Python programming in Marathi via this book!
+	<br>
+	<br>
+	हे पुस्तक मोफत उपलब्ध आहे.  पुस्तक डाऊनलोड करण्यासाठी खाली लिंक दिलेली आहे.  पुस्तकाचा नमुना ह्या पानाच्या एकदम खाली दिलेला आहे.  पायथॉन प्रोग्रामिंग मराठीतून आणि स्वअभ्यासाने शिकण्यासाठी ह्या पुस्तकाचा तुम्हाला नक्कीच खूप फायदा होईल.  पायथॉन ही अतिशय महत्त्वाची प्रोग्रामिंग लँग्वेज आहे जी प्रत्येक क्षेत्रात वापरली जाते.  आणि फक्त पायथॉन प्रोग्रामिंगच नाही, तर हे पुस्तक तुम्हाला अल्गोरिदमशी संबंधित संकल्पनात्मक विचारसरणीसुद्धा शिकवेल.  अशी विचारसरणी तुम्हाला एक उत्तम संगणक अभियंता किंवा संगणक वैज्ञानिक बनण्यासाठी अतिशय गरजेची आहे.  
+	<br>
+	<br>
+	हे भाषांतर <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0 लायसन्सद्वारे</a> मोफत उपलब्ध आहे; म्हणजे तुम्हाला अव्यावसायिक वापरासाठी (उदा., शैक्षणिक वापरासाठी) हे पुस्तक वितरित करण्याची परवानगी आहे.  तर ते जास्तीत जास्त लोकांपर्यंत पोहोचावे, विशेषतः ज्यांना ह्याची खरंच गरज आहे (गावांतील आणि लहान शहरांतील विद्यार्थी) त्यांच्यापर्यंत हे पोहोचण्याची संभाव्यता वाढावी, म्हणून कृपया तुम्ही ह्या वेबपेजची लिंक जास्तीतजास्त लोकांना WhatsApp फॉरवर्ड करा, ट्वीट करा, आणि इन्स्टाग्राम/फेसबूक/ब्लॉग इत्यादींवर नक्की शेअर करा.  <b background-color: #000000> कृपया  https://sagark4.github.io/think-python-2e-marathi/ ही ह्या वेबपेजची अधिकृत लिंकच शेअर करा</b>, कारण ह्यावर सतत ताजी आवृत्ती असेल; pdf शेअर केल्याने ताजी आवृत्ती मिळणार नाही.
+	<br>
+	<br>
+	अनुवादकाची औपचारिक ओळख:  डॉ. सागर सुधीर काळे ह्यांनी आय.आय.टी बॉम्बे (IIT Bombay), मुंबई येथून संगणक विज्ञानात एम.टेक. (M.Tech.) आणि अमेरिकेतील डार्टमथ (Dartmouth) कॉलेज ह्या Ivy league विद्यापीठातून अल्गोरिदम्स आणि कॉम्प्लेक्सिटी (Algorithms and Complexity) ह्या विषयामध्ये पीएच.डी. (Ph.D.) पूर्ण केली आहे.  त्यांनी जगातील उच्च दर्जाच्या अल्गोरिदम्स विषयावरील परिषदांमध्ये १२ शोधनिबंध प्रकाशित केले आहेत.  पीएच.डी. नंतर त्यांनी जवळजवळ ५ वर्षे संशोधनकार्य चालू ठेवले; त्यादरम्यान ५ सेमीस्टर्समध्ये त्यांनी अल्गोरिदम्स आणि संगणक विज्ञानातील गणित हे दोन विषय University of Vienna मध्ये शिकवले. सध्या ते व्हिएना, ऑस्ट्रियामध्ये एका क्वांटम काँप्युटींग (Quantum Computing) कंपनीत Quantum Compiler Developer म्हणून कार्यरत असतात.  सविस्तर माहितीसाठी <a href="../index.html"> इथे क्लिक करा.</a> 
+	<br>
+	<br>
+	<a href="https://bit.ly/tpm0131"><h4>पुस्तकाची सध्याची ड्राफ्ट आवृत्ती डाउनलोड करण्यासाठी क्लिक करा.  Click here to download the current draft version.</a></h4><br>
+	मी हे पुस्तक सतत अपडेट करत राहीन, तर सर्वांत ताज्या आवृत्तीसाठी हे वेबपेज तपासत चला.  कृपया आपल्या प्रतिक्रिया आणि दुरुस्त्या पुढील इमेलवर पाठवा: think.python.marathi [ॲट] gmail.com.
+	<br>
+	<br>
+	CC BY-NC-SA 4.0 लायसन्सद्वारे, व्यावसायिक किंवा व्यापारी वापर सोडून, कोणत्याही प्रकारच्या आर्थिक
+	नफ्यासाठी वापर सोडून, आणि लायसन्समधील सर्व अटींची पूर्तता केल्यास, इतर वापरांसाठी ह्या
+	पुस्तकात बदल करण्याची आणि/किंवा ह्या पुस्तकाच्या प्रती बनवून त्यांचे वितरण करण्याची आपल्याला
+	परवानगी देण्यात येत आहे.  संपूर्ण अटींसाठी वरील लायसन्सचे इंग्रजीमधील स्वरूपच अंतिमपणे लागू होईल
+	ज्याची माहिती पुढील लिंकवर दिलेली आहे:
+	<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> लायसन्सची लिंक.</a>  
+	<br>
+	<br>
+	ह्यानंतर, <a href="https://opendatastructures.org/"> ओपन डेटा स्ट्रक्चर्स: opendatastructures.org</a> ह्या पुस्तकाचे भाषांतर करण्याचा माझा विचार आहे.  तुम्हाला हे भाषांतर वाचून त्याचा अभ्यास करायला आवडणार असेल तर मला वर दिलेल्या इमेलवर नक्की कळवा.  संगणक विज्ञानाचा अभ्यास करण्यासाठी अजून काही उच्च दर्जाची आणि मोफत उपलब्ध पुस्तके म्हणजे
+	<ul>
+	  <li><a href="https://courses.csail.mit.edu/6.042/spring18/mcs.pdf"> Mathematics for Computer Science by Eric Lehman, F Thomson Leighton, and Albert R Meyer.</a></li>
+	  <li><a href="https://jeffe.cs.illinois.edu/teaching/algorithms/">Algorithms by Jeff Erickson</a></li>
+	</ul>
+	आणि ही पुस्तकेदेखील मराठीत बघण्याची माझी इच्छा आहे.
+	<br>
+	<br>
+	<h2> नमुना </h2>
+	<img src="think-python-2e-marathi/ch1_1.png">
+	<img src="think-python-2e-marathi/ch1_2.png">
+
+      </section>
+    </div>
+
+  </body>
 </html>
