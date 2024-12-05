@@ -111,6 +111,8 @@
       .publications h3 {
 	  color: #3498db;
 	  font-size: 1.8rem;
+          display: flex;
+          justify-content: space-between;
       }
 
       .publications ul {
@@ -138,12 +140,13 @@
       .personal h3 {
 	  color: #3498db;
 	  font-size: 1.8rem;
+          display: flex;
+          justify-content: space-between;
       }
       #tpm img {
 	  width: 100%;
 	  height: auto;
       }
-
 
       /* Media Query for responsiveness */
       @media (max-width: 768px) {
@@ -169,7 +172,7 @@
   </head>
   <body>
     <header>
-      <h1>Sagar Kale | सागर काळे</h1>
+      <h1 id="top">Sagar Kale | सागर काळे</h1>
       <p>
 	<a href="#publications">Publications</a> |
 	<a href="#tpm">पायथॉन विचार</a> |
@@ -206,8 +209,12 @@
 
       <!-- Publications List -->
       <section id = "publications" class="publications">
-	<h3>Publications</h3>
-	<ul>          <li>
+	<h3>
+	  Publications
+	  <div class="top-link"><a href="#top">Top</a></div>
+	</h3>
+	<ul>
+          <li>
             Roeland ter Hoeven, Benjamin E. Niehoff, Sagar Sudhir Kale, Wolfgang Lechner <br> In <b>Quantum Science and Technology, July 2023</b>
             Constructive plaquette compilation for the parity architecture <br>
             <a href="https://arxiv.org/abs/2307.10626">arXiv link</a>
@@ -280,7 +287,10 @@
 
       <!-- Personal Section -->
       <section id="personal" class="personal">
-	<h3>Personal</h3>
+	<h3>
+	  Personal
+	  <div class="top-link"><a href="#top">Top</a></div>
+	</h3>
 	I also like hiking and running (both mountain running and road running).
 	<br><br>
 	  I ran Sierre-Zinal 2019, which is part of the <a href="https://www.goldentrailseries.com/series/world/">Golden Trail
@@ -296,7 +306,10 @@
 
       </section>
       <section id = "tpm" class="personal">
-        <h3>पायथॉन विचार</h3>
+        <h3>
+	  पायथॉन विचार
+	  <div class="top-link"><a href="#top">Top</a></div>
+	</h3>
 	<br>
 	<h4>शिका संगणक वैज्ञानिकाप्रमाणे विचार करायला
 	  <br>
