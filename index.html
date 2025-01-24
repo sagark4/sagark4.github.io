@@ -168,6 +168,25 @@
               padding-left: 20px;
 	  }
       }
+      /* Style for fixed footer */
+      footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+      color: white;
+      text-align: center;
+      padding: 10px;
+      }
+
+      footer a {
+      color: white;
+      text-decoration: none;
+      }
+
+      footer a:hover {
+      text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -190,10 +209,16 @@
 	</div>
 	<div class="content">
           <p>
-            I am a computer-science teacher and software engineer.
+            I am a computer scientist.
             <br>
             <br>
-            <b>Latest: </b> I translated <a href="https://greenteapress.com/wp/think-python-2e/">Allen Downey's amazing book called
+            <b>Latest: I will be joining the computer science department (Fakultät für Informatik)
+            of University of Vienna as a senior lecturer (theoretical foundations) in
+            the <a href="https://taa.cs.univie.ac.at/"> Theory and Application of Algorithms</a>
+            group on 1 March 2025!</b>
+            <br>
+            <br>
+            <b>Earlier: </b> I translated <a href="https://greenteapress.com/wp/think-python-2e/">Allen Downey's amazing book called
               Think Python</a> into Marathi.
             <a href="think-python-2e-marathi/index.html">
               Click here for details.</a>
@@ -355,5 +380,55 @@
       </section>
     </div>
 
+    <footer>
+      <!-- 1. When Is Just Displaying the Privacy Policy Enough? -->
+
+      <!-- If your site is only collecting non-sensitive data like IP addresses for security
+      purposes and you're not using cookies for tracking or marketing, simply displaying a privacy
+      policy is generally sufficient. Here's why: -->
+
+      <!-- GDPR and similar privacy laws (like the CCPA in California) generally require transparency -->
+      <!-- about the collection of personal data (like IP addresses). However, you don’t need explicit -->
+      <!-- consent (via a “click to accept” button) unless you're: Using cookies for tracking (e.g., for -->
+      <!-- analytics or advertising). Collecting more detailed personal data (e.g., emails, names, or -->
+      <!-- payment details). -->
+
+      <!-- In your case (with just an IP address being logged for security purposes): -->
+
+      <!-- Displaying the privacy policy at the bottom of your page (or providing a link) is generally -->
+      <!-- sufficient to comply with privacy laws. You are informing users, and that's the key -->
+      <!-- requirement. If you're not using cookies for analytics or other tracking, users don't need to -->
+      <!-- "opt-in." -->
+
+      <!-- 2. When Might You Need a “Click to Accept” Consent? -->
+
+      <!-- You should ask for explicit user consent (through a "click to accept" popup or banner) if: -->
+
+      <!-- Cookies are used for tracking or analytics (e.g., Google Analytics, social media tracking, -->
+      <!-- etc.). Under GDPR, any tracking cookies require consent before they are set. You are -->
+      <!-- collecting additional personal data beyond the basics (e.g., email addresses, names, etc.). -->
+      <!-- You are targeting users in jurisdictions with stricter data protection laws (like the EU or -->
+      <!-- California, where user consent is explicitly required for certain types of data collection, -->
+      <!-- especially cookies). -->
+
+      <!-- For example, if you add a third-party service for analytics or a chat tool (like Google -->
+      <!-- Analytics, Hotjar, or a live chat widget), you will need to implement a cookie consent banner -->
+      <!-- or pop-up where the user explicitly accepts or rejects the use of cookies. -->
+
+      <!-- 4. Basic GDPR Compliance (For IPs and No Cookies) -->
+
+      <!-- If your site only collects IP addresses for security purposes and does not use cookies for tracking, -->
+      <!-- then you don't need explicit consent through a popup or banner. The privacy policy in the footer is -->
+      <!-- enough. You only need to provide information that: -->
+
+      <!-- You are collecting certain technical data (IP address) for legitimate purposes (security, -->
+      <!-- anti-bot measures, etc.). You’re not storing sensitive data or tracking users for marketing -->
+      <!-- purposes. -->
+      
+      <p>&copy; 2025 Sagar Kale. All rights reserved. | We do not collect any personal data on this
+        site. However, GitHub Pages (our hosting provider) may collect technical data, including your IP
+        address, for security and compliance purposes.
+        <a href="privacy.html" target="_blank">Click here to see the privacy policy</a></p>
+    </footer>
   </body>
 </html>
