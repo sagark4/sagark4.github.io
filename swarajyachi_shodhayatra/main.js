@@ -7,7 +7,7 @@ function setButtonsEnabled(enabled) {
     document.querySelectorAll('#choices button').forEach(b => b.disabled = !enabled);
     uiLocked = !enabled;
 }
-function wordWriter(el, text, wSpeed=120) {
+function wordWriter(el, text, wSpeed=220) {
     return new Promise(resolve => {
         el.innerHTML = '';
         const words = text.split(/\s+/);
@@ -37,10 +37,14 @@ const loopOverlay = document.getElementById('loopOverlay');
 const blackout    = document.getElementById('blackout');
 
 const introLines = [
+    'संपूर्ण अंधार.',
+    'हवेचा गंध दमट आणि जुनाट आहे, सर्वत्र शांतता आहे आणि पायाखालची पाळी हलकीच खसखसते आहे.',
+    'तुम्ही डोळे उघडता.',
+    'तुम्ही एका गडद गुफेत आहात, कुठलाही प्रकाश नाही, फक्त दूरवर आयताकृती उघडी जागा किंचित उजळते.',
+    'आयताकृती प्रकाशाच्या किरणांखाली गुफेची भिंत काळसर दिसते, प्रत्येक कोपरा अंधारात हरवलेला आहे.',
     'तुम्हाला माहीत नाही की तुम्ही येथे कसे आलात...',
-    'तुम्ही डोळे उघडता आणि एका प्रकाशाकडे जाता...',
-    'तुम्ही बाहेर पडता आणि लक्षात येते — ह्या वेरुळ लेणी!',
-    'तुमचे काम: छत्रपती शिवाजी महाराजांच्या काळातील दडलेले धागे जोडणे.'
+    'तुम्ही उजळणाऱ्या आयताकडे जाता आणि दरवाज्यातून बाहेर पडता तेव्हा लक्षात येते — ह्या तर वेरुळ लेणी!',
+    'तुमची मोहिम: छत्रपती शिवाजी महाराजांच्या काळातील दडलेले धागे जोडणे.'
 ];
 /* ---------- Rendering ---------- */
 function getPlace(name) {
@@ -188,9 +192,9 @@ function triggerLoopEnd() {
     if (loop > maxLoops) {
         const overlay = document.getElementById('gameOverOverlay');
         if(!allFound()) {
-            overlay.textContent = "खेळ संपला, तुम्ही काळाच्या पाषातून मुक्त होऊ शकला नाहीत.";
+            overlay.textContent = "खेळ संपला, तुम्ही काळाच्या पाशातून मुक्त होऊ शकला नाहीत.";
         } else {
-            overlay.textContent = "खेळ संपला, तुम्ही काळाच्या पाषातून मुक्त होऊ शकला नाहीत पण तुम्हाला सर्व चिन्हे गोळा करता आली.";
+            overlay.textContent = "खेळ संपला, तुम्ही काळाच्या पाशातून मुक्त होऊ शकला नाहीत पण तुम्हाला सर्व चिन्हे गोळा करता आली.";
         }
         overlay.style.opacity = '1';
         overlay.style.pointerEvents = 'auto';
@@ -233,10 +237,10 @@ function startIntro() {
         fadeMessage.style.display = 'none';
         introText.style.opacity = 1;
         for (const line of introLines) {
-            await wordWriter(introText, line, 120);
-            await waitMs(1200);
+            await wordWriter(introText, line);
+            await waitMs(2000); // this is the pause after each line is fully written by wordWriter
             introText.style.opacity = 0;
-            await waitMs(400);
+            await waitMs(400); // time gap between lines.
             introText.style.opacity = 1;
         }
         introText.style.opacity = 0;
@@ -267,7 +271,7 @@ const PLACES = [
     ], alwaysVisible:true},
     {name:'राजगड', symbol:'ची', facts:[
         'मराठा साम्राज्याची पहिली राजधानी दीर्घकाळ इथे होती.',
-        'सुवर्ण माची, संजीवनी माची आदी भाग प्रसिध्द.',
+        'सुवर्ण माची, संजीवनी माची आदी भाग प्रसिद्ध.',
     ], visibleIf: (state)=> !!state.found['प्रतापगड'] },
     {name:'तोरणा', symbol:'इ', facts:[
         'छत्रपती शिवाजी महाराजांनी तरुण वयात जिंकलेला पहिला गड मानला जातो.',
