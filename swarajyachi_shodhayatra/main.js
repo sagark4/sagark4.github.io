@@ -430,5 +430,5 @@ function startGame() {
     renderProgress();
     startTimer();
 }
-startGame();
-//startIntro();
+//startGame();
+startIntro();
