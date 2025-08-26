@@ -198,7 +198,7 @@ function triggerLoopEnd() {
     }
 
     const loopOverlay = document.getElementById('loopOverlay');
-    loopOverlay.textContent = "⏳ फेरा क्रमांक ${toDevanagari(loop)}: काळाचा पाश पुनःप्रारंभ (reset) होत आहे...";
+    loopOverlay.textContent = `⏳ फेरा क्रमांक ${toDevanagari(loop)}: काळाचा पाश पुनःप्रारंभ (reset) होत आहे...`;
     
     // fade in
     loopOverlay.style.opacity = '1';
