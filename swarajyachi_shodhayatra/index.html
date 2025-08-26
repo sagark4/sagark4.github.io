@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="mr">
+  <head>
+    <meta charset="UTF-8">
+    <title>स्वराज्याची शोधयात्रा</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+     :root { --card: rgba(255,255,255,0.92); --accent: #444; --maxw: 960px; }
+     * { box-sizing: border-box; }
+     body {
+       margin: 0;
+       font-family: Georgia, serif;
+       background: #fff;
+       color: #000;
+       transition: background-color 0.8s linear;
+     }
+     #message {
+       margin: 0.5rem 0 0.25rem;
+       text-align: center;
+       font-weight: 700;
+     }
+
+     /* Make message2 bigger */
+     #message2 {
+       font-size: 1.6rem;   /* bigger text */
+       text-align: left;    /* left-aligned */
+       font-weight: 700;    /* keep bold */
+       padding: 0.5rem;     /* optional, adds spacing */
+     }
+     .flash { animation: flash 0.6s ease-in-out 4; }
+     @keyframes flash { 0%,100%{opacity:1;} 50%{opacity:0;} }
+     #container { max-width: var(--maxw); margin: 0 auto; padding: 0.75rem; }
+     #hud {
+       display: flex; flex-wrap: wrap;
+       gap: .5rem 1rem; justify-content: space-between;
+       align-items: center; margin: .25rem 0 0.5rem;
+       font-weight: 700;
+     }
+     #layout { display: flex; flex-direction: column; gap: 0.75rem; }
+     .column { background: var(--card); border:1px solid #ddd; border-radius:14px; padding:1rem; }
+     #story { text-align:left; min-height:120px; }
+     #choices { display:flex; flex-wrap:wrap; gap:.5rem; }
+     #choices button {
+       border:1px solid var(--accent);
+       background:#fff; color:#000;
+       padding:.55rem .8rem; border-radius:10px;
+       cursor:pointer;
+     }
+     #choices button:disabled { opacity:.45; cursor:not-allowed; }
+     #symbols h3 { margin:0 0 .5rem; }
+     #information h3 { margin:0 0 .5rem; }
+     #travel h3 { margin:0 0 .5rem; }
+     .symbol { padding:.35rem 0; border-bottom:1px dashed #666; }
+     #blackout {
+       position:fixed; inset:0; background:#000;
+       opacity:0; pointer-events:none; z-index:50;
+       transition: opacity 5s linear;
+     }
+     /* Progress bars */
+     .progress-wrap { margin-top:.5rem; }
+     .progress-bar {
+       height:14px; background:#ddd;
+       border-radius:7px; overflow:hidden;
+     }
+     .progress-fill {
+       height:100%; background:#f60;
+       width:0%; transition:width .5s;
+     }
+     #progress2 {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 0.5rem;
+       font-weight: 700;
+     }
+     #progress2 .symbol {
+       padding: 0.25rem 0.5rem;
+       border-radius: 4px;
+       background-color: lightgray;
+     }
+     #progress2 .symbol.correct {
+       background-color: lightgreen;
+       font-weight: bold;
+     }
+     .sequence {
+       display:flex; gap:.3rem; margin-top:.5rem;
+     }
+     .sequence span {
+       padding:0.25rem 0.5rem;
+       border-radius:6px;
+       background:#eee;
+     }
+     .sequence .done { background:#cfc; }
+     .sequence .current { background:#fc0; font-weight:bold; }
+     @media(min-width:980px) {
+       #layout { display:grid; grid-template-columns:2fr 2fr 1.2fr; gap:1rem; }
+     }
+     #loopOverlay {
+       position: fixed;
+       inset: 0;
+       display: flex;                  /* always flex, never none */
+       align-items: center;
+       justify-content: center;
+       background: black;
+       color: white;
+       font-size: 1.4rem;
+       z-index: 30;
+       padding: 1rem;
+       text-align: center;
+       opacity: 0;                      /* start invisible */
+       transition: opacity 2.5s ease-in-out;
+       pointer-events: none;            /* ignore clicks */
+     }
+     #gameOverOverlay,
+     #victoryOverlay {
+       pointer-events: none; /* allows clicks to pass through when not visible */
+     }
+     /* Style for fixed footer */
+     footer {
+       position: fixed;
+       bottom: 0;
+       width: 100%;
+       background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+       color: white;
+       text-align: center;
+       padding: 10px;
+     }
+
+     footer a {
+       color: white;
+       text-decoration: none;
+     }
+
+     footer a:hover {
+       text-decoration: underline;
+     }
+     /* General fade-center overlay (desktop & default) */
+     .fade-center {
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       font-size: 1.4rem;
+       line-height: 1.6rem;
+       opacity: 0;
+       transition: opacity 0.8s ease-in-out;
+       max-width: 720px;
+       text-align: center;
+       background: rgba(255,255,255,0.9);
+       padding: 1rem 1.25rem;
+       border-radius: 12px;
+       z-index: 20;
+       overflow-y: auto;
+     }
+
+     /* Rules overlay: full width on mobile */
+     @media (max-width: 960px){
+       #rules.fade-center {
+         top: 50%;                  /* vertical center */
+         left: 50%;
+         transform: translate(-50%, -50%); /* keep vertically centered */
+         width: 90vw;               /* almost full width with margin */
+         max-width: none;           /* remove desktop cap */
+         padding: 1rem;             /* inner padding */
+         border-radius: 12px;       /* optional rounded corners */
+         height: auto;              /* grow with content */
+         overflow: visible;         /* no scroll */
+       }
+
+       #rules ul {
+         width: 100%;
+         max-width: none;
+         text-align: left;
+         font-size: 1.2rem;
+         line-height: 1.6rem;
+       }
+     }
+     .overlay {
+       position: fixed;
+       inset: 0;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       background: rgba(0,0,0,0.6); /* semi-transparent */
+       z-index: 100;
+       opacity: 0;
+       pointer-events: none;
+       transition: opacity 0.4s ease;
+     }
+
+     .overlay.show {
+       opacity: 1;
+       pointer-events: auto;
+     }
+
+     .overlay-content {
+       background: rgba(255,255,255,0.95);
+       padding: 1.5rem;
+       border-radius: 12px;
+       text-align: center;
+       max-width: 500px;
+       font-size: 1.2rem;
+     }
+     #travelOverlay {
+       position: fixed;
+       inset: 0;
+       display: none;
+       align-items: center;
+       justify-content: center;
+       background: rgba(0,0,0,0.8);
+       color: #fff;
+       font-size: 1.6rem;
+       z-index: 100;
+       animation: fadeInOut 2s ease forwards;
+     }
+
+     @keyframes fadeInOut {
+       0%   { opacity: 0; }
+       20%  { opacity: 1; }
+       80%  { opacity: 1; }
+       100% { opacity: 0; }
+     }
+     #hudTime {
+       background-color: yellow; /* highlight background */
+       color: black;             /* text color */
+       font-weight: bold;
+       padding: 0 4px;
+       border-radius: 4px;
+       transition: background-color 0.5s ease;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="fadeMessage" class="fade-center">कल्पना: सागर सुधीर काळे.</div>
+    <div id="intro"><div id="introText" class="fade-center"></div></div>
+    <div id="rules" class="fade-center" style="display:none; font-size:1.2rem; line-height:1.6rem; padding:0 1rem;">
+      <h3>खेळाचे नियम</h3>
+      <ul style="text-align:left; width:100%; margin:0.5rem auto;">
+        <li>गडांवर प्रवास करून माहिती गोळा करा आणि सर्व चिन्हे मिळवा.</li>
+        <li>सर्व चिन्हे मिळाल्यानंतर, योग्य क्रमाने गड पार करा — तेव्हाच काळाचा फेरा तुटेल.</li>
+        <li>प्रत्येक दिवसात तुम्ही जास्तीत जास्त पाच वेळा प्रवास करू शकता.</li>
+        <li>सध्याची वेळ पाहण्यासाठी वर उजव्या कोपऱ्यातील टाइमर पहा.</li>
+        <li>दररोज दिवसाच्या शेवटी वेळ पुनःप्रारंभ (reset) होते; खेळात एक दिवस = १ मिनिट.</li>
+        <li>सात फेऱ्यांमध्ये मोहीम पार न झाल्यास खेळ संपतो.</li>
+      </ul>
+      <button onclick="startGame()">सुरु करा</button>
+    </div>
+    <div id="loopOverlay">काळाची वाळू संपली — तुम्ही पुन्हा वेरुळ लेण्यात परत आलात... वेळेचा फेरा (time loop) परत वेरुळ पासून सुरु.</div>
+    <div id="gameOverOverlay" style="
+             position: fixed;
+             inset: 0;
+             background: black;
+             color: white;
+             font-size: 2rem;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             text-align: center;
+             opacity: 0;
+             transition: opacity 5s linear;
+             z-index: 50;
+             ">
+      खेळ संपला. तुम्ही काळाच्या पाषातून मुक्त होऊ शकला नाहीत.
+    </div>
+    <div id="victoryOverlay" style="
+             position: fixed;
+             inset: 0;
+             background: black;
+             color: white;
+             font-size: 2rem;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             text-align: center;
+             opacity: 0;
+             transition: opacity 5s linear;
+             z-index: 50;
+             ">
+      🎉 अभिनंदन! योग्य क्रमाने सर्व गड पार झाले. काळाचा पाश तुटला आहे.
+    </div>
+    <div id="blackout"></div>
+
+    <div id="game" style="display:none">
+      <div id="container">
+        <div id="hud">
+          <span id="hudLoc">📍 स्थान: —</span>
+          <span id="hudLoop">फेरा: — / १०</span>
+          <span id="hudTrav">प्रवास: ०/२</span>
+          <span id="hudGoal">चिन्हे: ०/७</span>
+          <span id="hudTime">वेळ: ६०से</span>
+        </div>
+        <div id="layout">
+          <div id="information" class="column">
+            <h3>माहिती</h3>
+            <div id="story"></div>
+          </div>
+          <div id="travel" class="column">
+            <h3>कुठे जायचे?</h3>
+            <div id="choices"></div>
+          </div>
+          <div id="symbols" class="column">
+            <h3>गोळा केलेली चिन्हे</h3>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div id="symProgress" class="progress-fill"></div></div>
+            </div>
+            <div id="sequence" class="sequence"></div>
+          </div>
+        </div>
+        <div id="message2"></div>
+        <div id="progress2" class="column"></div>
+        <!-- Fullscreen message overlay -->
+        <div id="messageOverlay" class="overlay">
+          <div class="overlay-content">
+            <p id="messageText"></p>
+          </div>
+        </div>
+        <div id="travelOverlay"></div>
+      </div>
+    </div>
+
+    <footer id ="footer">
+      <!-- 1. When Is Just Displaying the Privacy Policy Enough? -->
+
+      <!-- If your site is only collecting non-sensitive data like IP addresses for security
+           purposes and you're not using cookies for tracking or marketing, simply displaying a privacy
+           policy is generally sufficient. Here's why: -->
+
+      <!-- GDPR and similar privacy laws (like the CCPA in California) generally require transparency -->
+      <!-- about the collection of personal data (like IP addresses). However, you don’t need explicit -->
+      <!-- consent (via a “click to accept” button) unless you're: Using cookies for tracking (e.g., for -->
+      <!-- analytics or advertising). Collecting more detailed personal data (e.g., emails, names, or -->
+      <!-- payment details). -->
+
+      <!-- In your case (with just an IP address being logged for security purposes): -->
+
+      <!-- Displaying the privacy policy at the bottom of your page (or providing a link) is generally -->
+      <!-- sufficient to comply with privacy laws. You are informing users, and that's the key -->
+      <!-- requirement. If you're not using cookies for analytics or other tracking, users don't need to -->
+      <!-- "opt-in." -->
+
+      <!-- 2. When Might You Need a “Click to Accept” Consent? -->
+
+      <!-- You should ask for explicit user consent (through a "click to accept" popup or banner) if: -->
+
+      <!-- Cookies are used for tracking or analytics (e.g., Google Analytics, social media tracking, -->
+      <!-- etc.). Under GDPR, any tracking cookies require consent before they are set. You are -->
+      <!-- collecting additional personal data beyond the basics (e.g., email addresses, names, etc.). -->
+      <!-- You are targeting users in jurisdictions with stricter data protection laws (like the EU or -->
+      <!-- California, where user consent is explicitly required for certain types of data collection, -->
+      <!-- especially cookies). -->
+
+      <!-- For example, if you add a third-party service for analytics or a chat tool (like Google -->
+      <!-- Analytics, Hotjar, or a live chat widget), you will need to implement a cookie consent banner -->
+      <!-- or pop-up where the user explicitly accepts or rejects the use of cookies. -->
+
+      <!-- 4. Basic GDPR Compliance (For IPs and No Cookies) -->
+
+      <!-- If your site only collects IP addresses for security purposes and does not use cookies for tracking, -->
+      <!-- then you don't need explicit consent through a popup or banner. The privacy policy in the footer is -->
+      <!-- enough. You only need to provide information that: -->
+
+      <!-- You are collecting certain technical data (IP address) for legitimate purposes (security, -->
+      <!-- anti-bot measures, etc.). You’re not storing sensitive data or tracking users for marketing -->
+      <!-- purposes. -->
+      
+      <p>&copy; 2025 Sagar Kale. | <a href="privacy.html" target="_blank">Click
+        here to see the privacy policy</a></p>
+    </footer>
+    <script src="main.js"></script>
+  </body>
+</html>
