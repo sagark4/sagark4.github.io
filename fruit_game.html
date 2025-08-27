@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="mr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>फळ ओळखा!</title>
+    <style>
+     body {
+       background-color: #ffdbbb;
+       margin: 0;
+       font-family: sans-serif;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       height: 100vh;
+     }
+     .game-container {
+       width: 90%;
+       max-width: 500px;
+       height: 80%;
+       background: white;
+       border: 4px solid #444;
+       border-radius: 20px;
+       display: flex;
+       flex-direction: column;
+       justify-content: space-between;
+       padding: 16px;
+       box-shadow: 0 0 12px rgba(0,0,0,0.2);
+     }
+     .scoreboard {
+       display: flex;
+       justify-content: center;
+       gap: 2rem;
+       margin-top: 1rem;
+       font-size: 1.8rem;   /* bigger text for labels */
+       text-align: center;
+     }
+
+     .score-item {
+       font-weight: bold;
+     }
+
+     .score-item span {
+       font-size: 2.2rem;   /* even bigger numbers */
+       margin-left: 0.5rem;
+     }
+
+     .flash {
+       background-color: orange;
+       color: white;
+       padding: 0.2rem 0.5rem;
+       border-radius: 6px;
+       transition: background-color 0.3s, color 0.3s;
+     }
+     @keyframes flashAnim {
+       0% { color: red; transform: scale(1.3); }
+       100% { color: black; transform: scale(1); }
+     }
+     .emoji {
+       font-size: 20rem;
+       text-align: center;
+       flex: 1;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+     }
+     .options {
+       display: grid;
+       grid-template-columns: 1fr 1fr;
+       gap: 12px;
+       flex: 1;
+     }
+     .option-btn {
+       border: 2px solid #444;
+       border-radius: 12px;
+       font-size: 2.5rem;
+       font-weight: bold;
+       padding: 16px;
+       background: #eee;
+       cursor: pointer;
+       transition: background 0.2s, transform 0.1s;
+     }
+     .option-btn:hover {
+       background: #ddd;
+       transform: scale(1.05);
+     }
+     #feedback {
+       font-size: 2.5rem;       /* prominent font */
+       font-weight: bold;
+       text-align: center;
+       min-height: 3rem;        /* reserve vertical space */
+       margin: 1rem 0 -1rem 0; /* 0.25rem above (closer to scoreboard), 1rem below (space before emoji) */
+       transition: opacity 0.3s;
+       opacity: 0;
+     }
+
+     #feedback.show {
+       opacity: 1;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="scoreboard">
+        <div class="score-item">गुण: <span id="score">०००</span></div>
+        <div class="score-item">सर्वोच्च: <span id="highscore">०००</span></div>
+      </div>
+      <div id="feedback"></div>
+      <div class="emoji" id="fruit">🍎</div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <script>
+     const fruits = [
+       {emoji: "🍎", name: "सफरचंद"},
+       {emoji: "🍌", name: "केळे"},
+       {emoji: "🍇", name: "द्राक्षे"},
+       {emoji: "🍊", name: "संत्री"},
+       {emoji: "🍉", name: "कलिंगड"},
+       {emoji: "🍍", name: "अननस"},
+       {emoji: "🥭", name: "आंबा"},
+       {emoji: "🍐", name: "नाशपती"},
+     ];
+
+     let score = 0, highscore = 0, currentFruit;
+     const lingerTime = 4000; // in milliseconds (1.2s)
+
+     function toDevanagari(num) {
+       return String(num).replace(/[0-9]/g, d => "०१२३४५६७८९"[d]);
+     }
+
+     function getRandomFruit() {
+       return fruits[Math.floor(Math.random() * fruits.length)];
+     }
+
+     function shuffleArray(arr) {
+       for (let i = arr.length - 1; i > 0; i--) {
+         const j = Math.floor(Math.random() * (i + 1));
+         [arr[i], arr[j]] = [arr[j], arr[i]];
+       }
+       return arr;
+     }
+     // Generate a random permutation of all items at the start
+     let fruitQueue = shuffleArray([...fruits]); // fruits = your array of fruit objects
+
+     function newRound() {
+       if (fruitQueue.length === 0) {
+         // Refill and reshuffle once all have been shown
+         fruitQueue = shuffleArray([...fruits]);
+       }
+       currentFruit = fruitQueue.pop();  // take the next fruit in the shuffled order
+       document.getElementById("fruit").textContent = currentFruit.emoji;
+
+       // Generate options: 1 correct + 3 incorrect
+       let options = [currentFruit.name];
+       while (options.length < 4) {
+         let f = fruits[Math.floor(Math.random() * fruits.length)].name;
+         if (!options.includes(f)) options.push(f);
+       }
+       options = shuffleArray(options); // shuffle options so correct one isn't always first
+
+       const optionsDiv = document.getElementById("options");
+       optionsDiv.innerHTML = "";
+       options.forEach(opt => {
+         const btn = document.createElement("button");
+         btn.textContent = opt;
+         btn.className = "option-btn";
+         btn.onclick = () => checkAnswer(opt, btn); // pass the button element
+         optionsDiv.appendChild(btn);
+       });
+     }
+
+     function showFeedback(msg, color) {
+       const feedback = document.getElementById('feedback');
+       feedback.textContent = msg;
+       feedback.style.color = color;
+       feedback.classList.add('show');
+       setTimeout(() => feedback.classList.remove('show'), lingerTime);
+     }
+
+     function checkAnswer(answer, btn) {
+       // Disable all buttons
+       const optionBtns = document.querySelectorAll('.option-btn');
+       optionBtns.forEach(b => b.disabled = true);
+
+       // Highlight selected button
+       const originalBg = btn.style.backgroundColor;
+       btn.style.backgroundColor = '#ffd27f'; // highlight color
+
+       // Determine feedback
+       let feedbackText, feedbackColor;
+       if (answer === currentFruit.name) {
+         score += 10;
+         if (score > highscore) highscore = score;
+         updateScoreBoard(score === highscore);
+
+         feedbackText = `${answer} बरोबर आहे!`;  // e.g., "संत्री बरोबर आहे!"
+         feedbackColor = "green";
+       } else {
+         score = 0;
+         updateScoreBoard(false);
+
+         feedbackText = `${answer} नाही, ${currentFruit.name} आहे.`;  // e.g., "केळे चूक आहे!"
+         feedbackColor = "#FF8C42";
+       }
+
+       showFeedback(feedbackText, feedbackColor);
+
+       // Wait lingerTime before next round
+       setTimeout(() => {
+         btn.style.backgroundColor = originalBg;
+         newRound();
+       }, lingerTime);
+     }
+
+     function updateScoreBoard(highscoreUpdated) {
+       const scoreEl = document.getElementById('score');
+       const highscoreEl = document.getElementById('highscore');
+
+       scoreEl.textContent = toDevanagari(String(score).padStart(3, '0'));
+       scoreEl.classList.add('flash');
+       setTimeout(() => scoreEl.classList.remove('flash'), 1200);
+
+       if (highscoreUpdated) {
+         highscoreEl.textContent = toDevanagari(String(highscore).padStart(3, '0'));
+         highscoreEl.classList.add('flash');
+         setTimeout(() => highscoreEl.classList.remove('flash'), 1200);
+       }
+     }
+
+     newRound();
+    </script>
+  </body>
+</html>
