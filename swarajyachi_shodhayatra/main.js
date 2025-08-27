@@ -7,20 +7,27 @@ function setButtonsEnabled(enabled) {
     document.querySelectorAll('#choices button').forEach(b => b.disabled = !enabled);
     uiLocked = !enabled;
 }
-function wordWriter(el, text, wSpeed=220) {
+let wordWriterActive = true;
+function wordWriter(el, text, wSpeed = 240) {
     return new Promise(resolve => {
         el.innerHTML = '';
         const words = text.split(/\s+/);
-        let i=0;
+        let i = 0;
+
         function step() {
-            if(i < words.length) {
+            if (!wordWriterActive) {  // check flag at each step
+                resolve();            // stop immediately
+                return;
+            }
+            if (i < words.length) {
                 el.innerHTML += (i ? ' ' : '') + words[i];
                 i++;
                 setTimeout(step, wSpeed);
             } else {
-                resolve();
+                resolve();            // finished
             }
         }
+
         step();
     });
 }
@@ -146,6 +153,7 @@ function renderGame(first=false) {
 async function narrate(text) {
     const story = document.getElementById('story');
     setButtonsEnabled(false);
+    wordWriterActive = true;      // start narration
     await wordWriter(story, text);
     setButtonsEnabled(true);
 }
@@ -188,6 +196,7 @@ function stopTimer() {
     }
 }
 function triggerLoopEnd() {
+    wordWriterActive = false; // stops any ongoing narration
     loop++;
     if (loop > maxLoops) {
         const overlay = document.getElementById('gameOverOverlay');
@@ -206,7 +215,16 @@ function triggerLoopEnd() {
     
     // fade in
     loopOverlay.style.opacity = '1';
-
+    if(progressIndex > 0 ) progressIndex = 1;
+    const story = document.getElementById('story');
+    if(!allFound()) {
+        story.textContent = `तुम्ही परत वेरुळ लेण्यात आलात. आता कोणत्या किल्ल्यावर पुढचे चिन्ह शोधायला जायचे?`;
+    } else {
+        story.textContent = `तुम्ही परत वेरुळ लेण्यात आलात. परत योग्य क्रमाने गड पार करा.`;
+    }
+    renderProgress();
+    renderSymbols();
+    renderChoices();
     setTimeout(() => {
         // fade out
         loopOverlay.style.opacity = '0';
@@ -214,21 +232,16 @@ function triggerLoopEnd() {
         travelCount = 0;
         currentLoc = 'वेरुळ';
         updateHUD();
-        renderChoices();
-        renderSymbols();
         startTimer();
+        const story = document.getElementById('story');
         if(!allFound()) {
-            showMessage('तुम्ही परत वेरुळ लेण्यात आलात. आता कोणत्या किल्ल्यावर पुढचे चिन्ह शोधायला जायचे?', 6000);
+            showMessage('तुम्ही परत वेरुळ लेण्यात आलात. आता कोणत्या किल्ल्यावर पुढचे चिन्ह शोधायला जायचे?', 4000);
             story.textContent = `तुम्ही परत वेरुळ लेण्यात आलात. आता कोणत्या किल्ल्यावर पुढचे चिन्ह शोधायला जायचे?`;
         } else {
-            showMessage('तुम्ही परत वेरुळ लेण्यात आलात. परत योग्य क्रमाने गड पार करा.', 6000);
+            showMessage('तुम्ही परत वेरुळ लेण्यात आलात. परत योग्य क्रमाने गड पार करा.', 4000);
             story.textContent = `तुम्ही परत वेरुळ लेण्यात आलात. परत योग्य क्रमाने गड पार करा.`;
         }
-
-        const story = document.getElementById('story');
-        progressIndex = 1;
-        renderProgress();
-    }, 4000); // stay fully black for ~1.5s
+    }, 3000); // stay fully black for ~1.5s
 }
 function startIntro() {
     fadeMessage.style.opacity = 1;
@@ -237,6 +250,7 @@ function startIntro() {
         fadeMessage.style.display = 'none';
         introText.style.opacity = 1;
         for (const line of introLines) {
+            wordWriterActive = true;      // start narration
             await wordWriter(introText, line);
             await waitMs(2000); // this is the pause after each line is fully written by wordWriter
             introText.style.opacity = 0;
