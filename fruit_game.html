@@ -85,7 +85,7 @@
        transform: scale(1.05);
      }
      #feedback {
-       font-size: 2.5rem;       /* prominent font */
+       font-size: 2rem;       /* prominent font */
        font-weight: bold;
        text-align: center;
        min-height: 3rem;        /* reserve vertical space */
@@ -100,6 +100,7 @@
     </style>
   </head>
   <body>
+    <div class="page-wrapper">
     <div class="game-container">
       <div class="scoreboard">
         <div class="score-item">गुण: <span id="score">०००</span></div>
@@ -109,7 +110,18 @@
       <div class="emoji" id="fruit">🍎</div>
       <div class="options" id="options"></div>
     </div>
+    <footer>&copy; 2025 Sagar Kale. | <a href="privacy.html" target="_blank">Click here to see the privacy policy</a></footer>
+    </div>
 
+    <style>
+     footer {
+       text-align: center;
+       font-size: 0.8rem;        /* very small text */
+       color: #666;               /* subtle gray */
+       margin-top: 8px;           /* small gap from game container */
+       font-family: sans-serif;
+     }
+    </style>
     <script>
      const fruits = [
        {emoji: "🍎", name: "सफरचंद"},
