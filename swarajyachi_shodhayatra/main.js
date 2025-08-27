@@ -172,8 +172,13 @@ function showMessage(msg, dur = 2500) {
         text.textContent = '';
     }, dur);
 }
-function showMessage2(msg) {
+function showMessage2(msg, highlight = false) {
     const el = document.getElementById('message2');
+    if(highlight) {
+        el.style.backgroundColor = "lightyellow";   // set
+    } else {
+        el.style.removeProperty("background-color"); // reset back to original (CSS default)
+    }
     el.textContent = msg;
 }
 
@@ -182,6 +187,10 @@ function startTimer() {
     stopTimer();
     timerId = setInterval(() => {
         secondsLeft--;
+        if (secondsLeft <= 9 && !allFound()) {
+            document.querySelectorAll('#choices button').forEach(b => b.disabled = "true");
+            showMessage2("आज प्रवास निषिद्ध.", true);
+        }
         updateHUD();
         if (secondsLeft <= 0) {
             stopTimer();
@@ -375,6 +384,7 @@ async function onTravelClick(place) {
         showMessage('आज तुम्ही आणखी प्रवास करू शकत नाही.');
         return;
     }
+    document.querySelectorAll('#choices button').forEach(b => b.disabled = "true");
     // Save "from" location before changing
     const from = currentLoc;
     const to = place;
