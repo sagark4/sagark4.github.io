@@ -252,8 +252,11 @@ async function startIntro() {
             introText.style.opacity = 0;
             rules.style.display = 'block';
             rules.style.opacity = 1;
+            introText.remove();
         }, 3500);
     }
+    fadeMessage.remove();
+    fadeMessage1.remove();
 }
 
 /* ---------- Game Data ---------- */
@@ -618,6 +621,7 @@ function showQuiz(fortName) {
             const btn = document.createElement('button');
             btn.textContent = choiceText;
             btn.onclick = () => {
+                overlay.innerHTML = '';
                 overlay.style.display = 'none';
                 resolve(idx === q.correct);
             };
@@ -631,6 +635,7 @@ function showQuiz(fortName) {
 async function startGame() {
     document.getElementById('footer').style.display = 'none';  // <-- hide footer
     rules.style.display='none';
+    rules.remove();
     game.style.display='block';
     await onTravelClick('वेरुळ', true);
     renderProgress();
