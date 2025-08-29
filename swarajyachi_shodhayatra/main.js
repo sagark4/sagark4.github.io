@@ -233,8 +233,8 @@ async function startIntro() {
     setTimeout(() => fadeMessage.style.opacity = 0, 2400);
     await new Promise(r => setTimeout(r, 2000));
     fadeMessage1.style.opacity = 1;
-    setTimeout(() => fadeMessage1.style.opacity = 0, 2000);
-    await new Promise(r => setTimeout(r, 2000));
+    setTimeout(() => fadeMessage1.style.opacity = 0, 4000);
+    await new Promise(r => setTimeout(r, 4000));
     if(skipIntro) {
         startGame();
     } else {
