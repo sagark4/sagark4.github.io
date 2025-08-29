@@ -46,9 +46,12 @@
        padding:.55rem .8rem; border-radius:10px;
        cursor:pointer;
      }
-     #choices button:hover {
-       background: #f0f0f0;   /* light gray highlight */
-       transform: translateY(-2px); /* optional small lift effect */
+     /* Hover effect for desktop */
+     @media (hover: hover) and (pointer: fine) {
+       #choices button:hover {
+         background: #f0f0f0;  /* light gray highlight */
+         transform: translateY(-2px); /* optional small lift effect */
+       }
      }
      #choices button:disabled { opacity:.45; cursor:not-allowed; }
      #symbols h3 { margin:0 0 .5rem; }
