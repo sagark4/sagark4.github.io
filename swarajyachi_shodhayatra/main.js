@@ -235,21 +235,25 @@ async function startIntro() {
     fadeMessage1.style.opacity = 1;
     setTimeout(() => fadeMessage1.style.opacity = 0, 2000);
     await new Promise(r => setTimeout(r, 2000));
-    setTimeout(async () => {
-        fadeMessage.style.display = 'none';
-        introText.style.opacity = 1;
-        for (const line of introLines) {
-            wordWriterActive = true;      // start narration
-            await wordWriter(introText, line);
-            await waitMs(2000); // this is the pause after each line is fully written by wordWriter
-            introText.style.opacity = 0;
-            await waitMs(400); // time gap between lines.
+    if(skipIntro) {
+        startGame();
+    } else {
+        setTimeout(async () => {
+            fadeMessage.style.display = 'none';
             introText.style.opacity = 1;
-        }
-        introText.style.opacity = 0;
-        rules.style.display = 'block';
-        rules.style.opacity = 1;
-    }, 3500);
+            for (const line of introLines) {
+                wordWriterActive = true;      // start narration
+                await wordWriter(introText, line);
+                await waitMs(2000); // this is the pause after each line is fully written by wordWriter
+                introText.style.opacity = 0;
+                await waitMs(400); // time gap between lines.
+                introText.style.opacity = 1;
+            }
+            introText.style.opacity = 0;
+            rules.style.display = 'block';
+            rules.style.opacity = 1;
+        }, 3500);
+    }
 }
 
 /* ---------- Game Data ---------- */
@@ -356,6 +360,7 @@ const introLines = [
 ];
 
 /* ---------- State ---------- */
+let skipIntro = false;
 let loop = 1, maxLoops = 7, loopLen = 60;
 let secondsLeft = loopLen, timerId = null;
 let foundAt = { };
@@ -631,6 +636,9 @@ async function startGame() {
     renderProgress();
     startTimer();
 }
+document.getElementById('skipIntroBtn').onclick = () => {
+    skipIntro = true;
+};
 //startGame();
 startIntro();
 
