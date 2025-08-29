@@ -46,6 +46,10 @@
        padding:.55rem .8rem; border-radius:10px;
        cursor:pointer;
      }
+     #choices button:hover {
+       background: #f0f0f0;   /* light gray highlight */
+       transform: translateY(-2px); /* optional small lift effect */
+     }
      #choices button:disabled { opacity:.45; cursor:not-allowed; }
      #symbols h3 { margin:0 0 .5rem; }
      #information h3 { margin:0 0 .5rem; }
@@ -227,10 +231,67 @@
        border-radius: 4px;
        transition: background-color 0.5s ease;
      }
+     /* Scrollable quiz overlay */
+     #quizOverlay {
+       position: fixed;
+       top: 0; left: 0; right: 0; bottom: 0;
+       background: rgba(0,0,0,0.95);
+       color: white;
+       display: none;
+       flex-direction: column;
+       justify-content: flex-start;
+       align-items: center;
+       padding: 1rem 2rem;
+       overflow-y: auto;
+       z-index: 9999;
+     }
+
+     #quizOverlay h2, #quizOverlay h3, #quizOverlay h5 {
+       margin: 1rem 0 0.5rem;
+       max-width: 400px;
+       text-align: justify; /* optional, looks neat */
+     }
+
+     #quizOverlay p {
+       margin: 0.5rem 0;
+       line-height: 1.4rem;
+       max-width: 400px;
+       text-align: justify; /* optional, looks neat */
+     }
+
+     #quizOverlay img {
+       max-width: 100%;
+       margin: 1rem 0;
+       border-radius: 8px;
+     }
+
+     #quizOverlay .choices {
+       display: flex;
+       flex-direction: column;
+       gap: 0.5rem;
+       margin: 1rem 0;
+     }
+
+     #quizOverlay .choices button {
+       padding: 0.5rem 1rem;
+       border-radius: 6px;
+       border: 1px solid white;
+       background: rgba(255,255,255,0.1);
+       color: white;
+       cursor: pointer;
+     }
+
+     #quizOverlay .choices button:hover {
+       background: rgba(255,255,255,0.3);
+     }
     </style>
   </head>
   <body>
-    <div id="fadeMessage" class="fade-center">कल्पना: सागर सुधीर काळे.</div>
+    <div id="fadeMessage" class="fade-center">
+      <img src="शिवाजी_महाराज_1.jpg" alt="छत्रपती शिवाजी महाराज" class="shivaji-img">
+      <p class="salute">छत्रपती शिवाजी महाराजांना मानाचा मुजरा!</p>
+    </div>
+    <div id="fadeMessage1" class="fade-center">सागर सुधीर काळे कडून.</div>
     <div id="intro"><div id="introText" class="fade-center"></div></div>
     <div id="rules" class="fade-center" style="display:none; font-size:1.2rem; line-height:1.6rem; padding:0 1rem;">
       <h3>खेळाचे नियम</h3>
@@ -240,6 +301,9 @@
         <li>प्रत्येक दिवसात तुम्ही जास्तीत जास्त पाच वेळा प्रवास करू शकता.</li>
         <li>सध्याची वेळ पाहण्यासाठी वर उजव्या कोपऱ्यातील टाइमर पहा.</li>
         <li>दररोज दिवसाच्या शेवटी वेळ पुनःप्रारंभ (reset) होते; खेळात एक दिवस = १ मिनिट.</li>
+        <ul style="text-align:left; width:100%; margin:0.5rem auto;">
+          <li>तुम्हाला खेळात काही माहिती दाखवताना वेळ थांबवली जाते.</li>
+        </ul>
         <li>सात फेऱ्यांमध्ये मोहिम पूर्ण न झाल्यास खेळ संपतो.</li>
       </ul>
       <button onclick="startGame()">सुरु करा</button>
@@ -314,54 +378,11 @@
           </div>
         </div>
         <div id="travelOverlay"></div>
+        <div id="quizOverlay"></div>
       </div>
     </div>
 
     <footer id ="footer">
-      <!-- 1. When Is Just Displaying the Privacy Policy Enough? -->
-
-      <!-- If your site is only collecting non-sensitive data like IP addresses for security
-           purposes and you're not using cookies for tracking or marketing, simply displaying a privacy
-           policy is generally sufficient. Here's why: -->
-
-      <!-- GDPR and similar privacy laws (like the CCPA in California) generally require transparency -->
-      <!-- about the collection of personal data (like IP addresses). However, you don’t need explicit -->
-      <!-- consent (via a “click to accept” button) unless you're: Using cookies for tracking (e.g., for -->
-      <!-- analytics or advertising). Collecting more detailed personal data (e.g., emails, names, or -->
-      <!-- payment details). -->
-
-      <!-- In your case (with just an IP address being logged for security purposes): -->
-
-      <!-- Displaying the privacy policy at the bottom of your page (or providing a link) is generally -->
-      <!-- sufficient to comply with privacy laws. You are informing users, and that's the key -->
-      <!-- requirement. If you're not using cookies for analytics or other tracking, users don't need to -->
-      <!-- "opt-in." -->
-
-      <!-- 2. When Might You Need a “Click to Accept” Consent? -->
-
-      <!-- You should ask for explicit user consent (through a "click to accept" popup or banner) if: -->
-
-      <!-- Cookies are used for tracking or analytics (e.g., Google Analytics, social media tracking, -->
-      <!-- etc.). Under GDPR, any tracking cookies require consent before they are set. You are -->
-      <!-- collecting additional personal data beyond the basics (e.g., email addresses, names, etc.). -->
-      <!-- You are targeting users in jurisdictions with stricter data protection laws (like the EU or -->
-      <!-- California, where user consent is explicitly required for certain types of data collection, -->
-      <!-- especially cookies). -->
-
-      <!-- For example, if you add a third-party service for analytics or a chat tool (like Google -->
-      <!-- Analytics, Hotjar, or a live chat widget), you will need to implement a cookie consent banner -->
-      <!-- or pop-up where the user explicitly accepts or rejects the use of cookies. -->
-
-      <!-- 4. Basic GDPR Compliance (For IPs and No Cookies) -->
-
-      <!-- If your site only collects IP addresses for security purposes and does not use cookies for tracking, -->
-      <!-- then you don't need explicit consent through a popup or banner. The privacy policy in the footer is -->
-      <!-- enough. You only need to provide information that: -->
-
-      <!-- You are collecting certain technical data (IP address) for legitimate purposes (security, -->
-      <!-- anti-bot measures, etc.). You’re not storing sensitive data or tracking users for marketing -->
-      <!-- purposes. -->
-      
       <p>&copy; 2025 Sagar Kale. | <a href="../privacy.html" target="_blank">Click
         here to see the privacy policy</a></p>
     </footer>
