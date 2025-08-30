@@ -12,30 +12,45 @@ function wordWriter(el, text, wSpeed = 240) {
     return new Promise(resolve => {
         el.innerHTML = '';
 
-        // Use Intl.Segmenter for proper grapheme segmentation (works with Devanagari too)
+        // Segment into graphemes
         const segmenter = new Intl.Segmenter('mr', { granularity: 'grapheme' });
         const graphemes = [...segmenter.segment(text)].map(seg => seg.segment);
 
-        // If you want roughly the same pacing as words,
-        // divide word speed into per-grapheme speed
+        // Process graphemes to merge virama sequences
+        const processed = [];
+        let temp = "";
+
+        for (let i = 0; i < graphemes.length; i++) {
+            const g = graphemes[i];
+            temp += g;
+
+            if (!g.endsWith("्")) {  
+                // current cluster finished
+                processed.push(temp);
+                temp = "";
+            }
+        }
+        if (temp) processed.push(temp); // leftover, just in case
+        console.log(processed);
+
+        // per-unit speed (slightly faster than words)
         const lSpeed = Math.floor(wSpeed / 1.5);
 
+        // Animate typing
         let i = 0;
-
         function step() {
-            if (!wordWriterActive) {  // external flag
+            if (!wordWriterActive) {
                 resolve();
                 return;
             }
-            if (i < graphemes.length) {
-                el.innerHTML += graphemes[i];
+            if (i < processed.length) {
+                el.innerHTML += processed[i];
                 i++;
                 setTimeout(step, lSpeed);
             } else {
-                resolve();  // finished typing
+                resolve();
             }
         }
-
         step();
     });
 }
