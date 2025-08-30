@@ -31,10 +31,9 @@ function wordWriter(el, text, wSpeed = 240) {
             }
         }
         if (temp) processed.push(temp); // leftover, just in case
-        console.log(processed);
 
         // per-unit speed (slightly faster than words)
-        const lSpeed = Math.floor(wSpeed / 1.5);
+        const lSpeed = Math.floor(wSpeed / 2);
 
         // Animate typing
         let i = 0;
