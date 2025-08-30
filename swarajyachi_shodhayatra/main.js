@@ -11,20 +11,28 @@ let wordWriterActive = true;
 function wordWriter(el, text, wSpeed = 240) {
     return new Promise(resolve => {
         el.innerHTML = '';
-        const words = text.split(/\s+/);
+
+        // Use Intl.Segmenter for proper grapheme segmentation (works with Devanagari too)
+        const segmenter = new Intl.Segmenter('mr', { granularity: 'grapheme' });
+        const graphemes = [...segmenter.segment(text)].map(seg => seg.segment);
+
+        // If you want roughly the same pacing as words,
+        // divide word speed into per-grapheme speed
+        const lSpeed = Math.floor(wSpeed / 1.5);
+
         let i = 0;
 
         function step() {
-            if (!wordWriterActive) {  // check flag at each step
-                resolve();            // stop immediately
+            if (!wordWriterActive) {  // external flag
+                resolve();
                 return;
             }
-            if (i < words.length) {
-                el.innerHTML += (i ? ' ' : '') + words[i];
+            if (i < graphemes.length) {
+                el.innerHTML += graphemes[i];
                 i++;
-                setTimeout(step, wSpeed);
+                setTimeout(step, lSpeed);
             } else {
-                resolve();            // finished
+                resolve();  // finished typing
             }
         }
 
