@@ -462,7 +462,7 @@ async function onTravelClick(place, first = false) {
         return;
     }
     if (!unlockedTravel && travelCount >= 5) {
-        showMessage('आज तुम्ही आणखी प्रवास करू शकत नाही.');
+        showMessage('आज तुम्ही आणखी प्रवास करू शकत नाही. तुम्ही गोळा केलेली चिन्हे उद्याही असतील.', 4000);
         startTimer();
         return;
     }
@@ -470,7 +470,6 @@ async function onTravelClick(place, first = false) {
     if(!first) {
         travelCount += (!unlockedTravel ? 1 : 0);        
     }
-    updateHUD();
 
     // 🔒 Wait until travel animation finishes
     if(!unlockedTravel && !first) {
@@ -481,6 +480,7 @@ async function onTravelClick(place, first = false) {
         currentLoc = place;
         await showTravelAnimation(from, to, travelCount);
     }
+    updateHUD();
 
     let discoveryText = '';
     if (!foundAt[place]) {
