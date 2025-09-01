@@ -462,7 +462,7 @@ async function onTravelClick(place, first = false) {
         return;
     }
     if (!unlockedTravel && travelCount >= 5) {
-        showMessage('आज तुम्ही आणखी प्रवास करू शकत नाही. तुम्ही गोळा केलेली चिन्हे उद्याही असतील.', 4000);
+        showMessage('आज तुम्ही आणखी प्रवास करू शकत नाही. काळाचा हा फेरा (एक मिनिट) संपेपर्यंत थांबा. तुम्ही गोळा केलेली चिन्हे उद्याही असतील.', 4000);
         startTimer();
         return;
     }
