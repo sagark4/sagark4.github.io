@@ -111,19 +111,20 @@
      }
 
      .option-btn {
-       border: 2px solid #444;
-       border-radius: 12px;
-       font-size: 1.5rem;
+       border: 3px solid #333;
+       border-radius: 16px;
+       font-size: 2rem;              /* bigger Marathi labels */
        font-weight: bold;
-       padding: 16px;
+       padding: 64px 0;              /* taller, touch-friendly */
        color: #fff;
        cursor: pointer;
-       transition: transform 0.1s;
+       transition: transform 0.15s, box-shadow 0.2s;
+       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
        transform: none;
      }
-
      .option-btn:hover {
-       transform: scale(1.05);
+       transform: scale(1.08);
+       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
      }
 
      footer {
