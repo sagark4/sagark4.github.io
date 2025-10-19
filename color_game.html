@@ -119,6 +119,7 @@
        color: #fff;
        cursor: pointer;
        transition: transform 0.1s;
+       transform: none;
      }
 
      .option-btn:hover {
@@ -232,6 +233,13 @@ const audioFiles = {
      let colorQueue = shuffle([...colors]);
 
      function newRound() {
+       // Clean up any lingering hover or inline styles from previous buttons
+       const oldButtons = document.querySelectorAll(".option-btn");
+       oldButtons.forEach(b => {
+         b.style.transform = "";
+         b.style.backgroundColor = "";
+         b.disabled = false;
+       });
        if (colorQueue.length === 0) colorQueue = shuffle([...colors]);
        currentColor = colorQueue.pop();
 
