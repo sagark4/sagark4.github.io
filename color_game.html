@@ -305,8 +305,12 @@
 
        if (answerObj.name === currentColor.name) {
          score += 10;
-         if (score > highscore) highscore = score;
-         updateScoreBoard(true);
+         if (score > highscore) {
+           highscore = score;
+           updateScoreBoard(true);
+         } else {
+           updateScoreBoard(false);
+         }
 
          // ✅ show Marathi text only if correct
          feedback.innerHTML = `बरोबर!`;
@@ -315,20 +319,21 @@
          score = 0;
          updateScoreBoard(false);
 
-         // ✅ show color square instead of word
+         // ✅ show color square (gradient or solid)
          feedback.innerHTML = `नाही, हा रंग आहे: <span style="
-      display:inline-block;
-      width: 1.5em;
-      height: 1.5em;
-      background-color: ${currentColor.hex};
-      border: 2px solid #000;
-      vertical-align: middle;
-      border-radius: 4px;"></span>`;
+  display:inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  ${currentColor.gradient 
+    ? `background: ${currentColor.gradient};` 
+    : `background-color: ${currentColor.hex};`}
+  border: 2px solid #000;
+  vertical-align: middle;
+  border-radius: 4px;"></span>`;
          feedback.style.color = "#E65100";
        }
-
-       feedback.classList.add("show");
-       setTimeout(() => feedback.classList.remove("show"), lingerTime);
+         feedback.classList.add("show");
+         setTimeout(() => feedback.classList.remove("show"), lingerTime);
 
        // ✅ Auto-start next round after lingerTime
        setTimeout(() => {
