@@ -107,7 +107,8 @@
      .option-btn {
        border: 2px solid #444;
        border-radius: 12px;
-       font-size: 6rem;
+       width: 200px;
+       height: 200px;
        font-weight: bold;
        padding: 16px;
        color: #222;
@@ -122,9 +123,69 @@
        margin-top: 8px;
        font-family: sans-serif;
      }
+     /* --- Animations --- */
+
+     /* Celebrate animation for game finish */
+     @keyframes celebrate {
+       0% { transform: scale(1) rotate(0deg); background-color: white; }
+       20% { transform: scale(1.1) rotate(2deg); background-color: #fff3e0; }
+       40% { transform: scale(1.15) rotate(-2deg); background-color: #ffecb3; }
+       60% { transform: scale(1.1) rotate(1deg); background-color: #fff3e0; }
+       100% { transform: scale(1) rotate(0deg); background-color: white; }
+     }
+
+     .game-container.celebrate {
+       animation: celebrate 1.5s ease;
+     }
+     /* Floating center message overlay */
+     .level-message {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%) scale(0.9);
+       background: rgba(0, 0, 0, 0.8);
+       color: #fff;
+       font-size: 2rem;
+       font-weight: bold;
+       padding: 1rem 2rem;
+       border-radius: 1rem;
+       text-align: center;
+       opacity: 0;
+       pointer-events: none;
+       transition: opacity 0.4s, transform 0.4s;
+       z-index: 10;
+     }
+
+     .level-message.show {
+       opacity: 1;
+       transform: translate(-50%, -50%) scale(1);
+     }
+     /* --- Confetti animation --- */
+     .confetti {
+       position: fixed;
+       top: -10px;
+       width: 10px;
+       height: 10px;
+       border-radius: 50%;
+       opacity: 0.9;
+       animation: fall 3s linear forwards;
+       z-index: 100;
+     }
+
+     @keyframes fall {
+       0% {
+         transform: translateY(0) rotate(0deg);
+         opacity: 1;
+       }
+       100% {
+         transform: translateY(100vh) rotate(720deg);
+         opacity: 0;
+       }
+     }
     </style>
   </head>
   <body>
+    <div id="levelMessage" class="level-message"></div>
     <div class="page-wrapper">
       <div style="text-align: center;">
         मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
@@ -217,9 +278,17 @@ const audioFiles = {
      }
 
      let swarQueue = shuffle([...swars]);
+     let level = 1,
+         mistakesMade = false;
 
-     function newRound() {
-       if (swarQueue.length === 0) swarQueue = shuffle([...swars]);
+     function newRoundLevel1() {
+       if (swarQueue.length === 0) {
+         swarQueue = shuffle([...swars]); // reset for replay
+         mistakesMade = false;
+       }
+       /* playGameFinishAnimation();
+        * showLevelMessage("Level 1 Completed! 🎯");
+        * launchConfetti(1000); */
        currentSwar = swarQueue.pop();
 
        // short–long vowel (swar) pairs
@@ -245,17 +314,18 @@ const audioFiles = {
        }
 
        options = shuffle(options);
-       renderOptions(options);
+       renderOptionsLevel1(options);
      }
 
-     function renderOptions(options) {
+     function renderOptionsLevel1(options) {
        const optionsDiv = document.getElementById("options");
        optionsDiv.innerHTML = "";
        options.forEach((opt) => {
          const btn = document.createElement("button");
          btn.className = "option-btn";
+         btn.style.fontSize = "8rem";
          btn.textContent = opt.name;
-         btn.onclick = () => checkAnswer(opt);
+         btn.onclick = () => checkAnswerLevel1(opt);
          optionsDiv.appendChild(btn);
        });
      }
@@ -279,7 +349,7 @@ const audioFiles = {
        setTimeout(() => feedback.classList.remove("show"), lingerTime);
      }
 
-     function checkAnswer(answerObj) {
+     function checkAnswerLevel1(answerObj) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
 
        if (answerObj.name === currentSwar.name) {
@@ -294,7 +364,7 @@ const audioFiles = {
        }
 
        setTimeout(() => {
-         newRound();
+         newRoundLevel1();
          setTimeout(playSound, 300); // short delay to autoplay next question
        }, lingerTime);
      }
@@ -314,9 +384,43 @@ const audioFiles = {
        }
      }
 
+     const gameContainer = document.querySelector(".game-container");
+
+     function playGameFinishAnimation() {
+       gameContainer.classList.add("celebrate");
+       setTimeout(() => gameContainer.classList.remove("celebrate"), 1500);
+     }
+
+     const levelMessage = document.getElementById("levelMessage");
+
+     function showLevelMessage(text, duration = 2000) {
+       levelMessage.textContent = text;
+       levelMessage.classList.add("show");
+       setTimeout(() => levelMessage.classList.remove("show"), duration);
+     }
+
+     function launchConfetti(count = 60) {
+       const colors = ["#FF4081", "#FFEB3B", "#4CAF50", "#2196F3", "#FF5722", "#9C27B0"];
+       const container = document.body;
+
+       for (let i = 0; i < count; i++) {
+         const confetti = document.createElement("div");
+         confetti.classList.add("confetti");
+         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+         confetti.style.left = Math.random() * 100 + "vw";
+         confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+         confetti.style.width = confetti.style.height = 6 + Math.random() * 6 + "px";
+         confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+         container.appendChild(confetti);
+
+         // remove after animation
+         setTimeout(() => confetti.remove(), 4000);
+       }
+     }
+
      document.getElementById("playBtn").onclick = playSound;
 
-     newRound();
+     newRoundLevel1();
     </script>
   </body>
 </html>
