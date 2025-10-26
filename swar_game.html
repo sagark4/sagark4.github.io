@@ -145,7 +145,7 @@
        transform: translate(-50%, -50%) scale(0.9);
        background: rgba(0, 0, 0, 0.8);
        color: #fff;
-       font-size: 2rem;
+       font-size: 3rem;
        font-weight: bold;
        padding: 1rem 2rem;
        border-radius: 1rem;
@@ -300,9 +300,9 @@ const audioFiles = {
          level = 2;
          mistakesMade = false;
          streak = 0;
-         updateProgress();
          l2Queue = shuffle([...level2Items]);
-         levelTotalQs = l2Items.length;
+         levelTotalQs = level2Items.length;
+         updateProgress();
          newRoundLevel2();
          return;
        }
@@ -354,8 +354,12 @@ const audioFiles = {
        if (answerObj.name === currentSwar.name) {
          streak++;
          score += 10;
-         if (score > highscore) highscore = score;
-         updateScoreBoard(true);
+         if (score > highscore) {
+           highscore = score;
+           updateScoreBoard(true);
+         } else {
+           updateScoreBoard(false);
+         }
          showFeedback(`✔️ ${answerObj.name} बरोबर आहे!`, "green");
        } else {
          score = 0;
@@ -470,9 +474,9 @@ const audioFiles = {
          level = 3;
          mistakesMade = false;
          streak = 0;
-         updateProgress();
          l3Queue = shuffle([...level3Items]);
-         levelTotalQs = l3Items.length;
+         levelTotalQs = level3Items.length;
+         updateProgress();
          newRoundLevel3();
          return;
        }
@@ -522,10 +526,14 @@ const audioFiles = {
        if (answerObj.key === currentSwar.key) {
          streak++;
          score += 10;
-         if (score > highscore) highscore = score;
-         updateScoreBoard(true);
-         showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
-       } else {
+         if (score > highscore) {
+           highscore = score;
+           updateScoreBoard(true);
+         } else {
+           updateScoreBoard(false);
+         }
+       showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+     } else {
          score = 0;
          streak = 0;
          mistakesMade = true;
@@ -601,9 +609,9 @@ const audioFiles = {
          level = 1;
          mistakesMade = false;
          streak = 0;
-         updateProgress();
          swarQueue = shuffle([...swars]);
          levelTotalQs = swars.length;
+         updateProgress();
          newRoundLevel1();
          return;
        }
@@ -641,9 +649,13 @@ const audioFiles = {
        if (answerObj.key === currentSwar.key) {
          streak++;
          score += 10;
-         if (score > highscore) highscore = score;
-         updateScoreBoard(true);
-         showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+         if (score > highscore) {
+           highscore = score;
+           updateScoreBoard(true);
+         } else {
+           updateScoreBoard(false);
+         }
+       showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
        } else {
          score = 0;
          streak = 0;
