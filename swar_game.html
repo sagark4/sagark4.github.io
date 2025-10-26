@@ -182,6 +182,13 @@
          opacity: 0;
        }
      }
+     .disabled {
+       background-color: #ddd;  /* Light gray background */
+       color: #aaa;             /* Light gray text */
+       cursor: not-allowed;     /* Change cursor to "not-allowed" */
+       opacity: 0.5;            /* Reduce opacity */
+       pointer-events: none;    /* Disable click interaction */
+     }
     </style>
   </head>
   <body>
@@ -270,6 +277,7 @@ const audioFiles = {
 
      const lingerTime = 4000;
 
+     const playBtn = document.getElementById("playBtn");
      function toDevanagari(num) {
        return String(num).replace(/[0-9]/g, (d) => "०१२३४५६७८९"[d]);
      }
@@ -289,6 +297,7 @@ const audioFiles = {
          levelTotalQs = swars.length;
 
      async function newRoundLevel1() {
+       playBtn.disabled = false; playBtn.classList.remove("disabled");
        if (mistakesMade) {
          swarQueue = shuffle([...swars]);
          mistakesMade = false;
@@ -350,6 +359,7 @@ const audioFiles = {
 
      function checkAnswerLevel1(answerObj) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+       playBtn.disabled = true; playBtn.classList.add("disabled");
 
        if (answerObj.name === currentSwar.name) {
          streak++;
@@ -463,6 +473,7 @@ const audioFiles = {
      let l2Queue = shuffle([...level2Items]);
 
      async function newRoundLevel2() {
+       playBtn.disabled = false; playBtn.classList.remove("disabled");
        if (mistakesMade) {
          l2Queue = shuffle([...level2Items]);
          mistakesMade = false;
@@ -522,6 +533,7 @@ const audioFiles = {
 
      function checkAnswerLevel2(answerObj) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+       playBtn.disabled = true; playBtn.classList.add("disabled");
 
        if (answerObj.key === currentSwar.key) {
          streak++;
@@ -597,6 +609,7 @@ const audioFiles = {
      let l3Queue = shuffle([...level3Items]);
 
      async function newRoundLevel3() {
+       playBtn.disabled = false; playBtn.classList.remove("disabled");
        if (mistakesMade) {
          l3Queue = shuffle([...level3Items]);
          mistakesMade = false;
@@ -645,6 +658,7 @@ const audioFiles = {
 
      function checkAnswerLevel3(answerObj) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+       playBtn.disabled = true; playBtn.classList.add("disabled");
 
        if (answerObj.key === currentSwar.key) {
          streak++;
