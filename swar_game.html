@@ -194,6 +194,11 @@
         <div style="text-align: center; font-size:200%;">
           ऐकून स्वर ओळखा!
         </div>
+        <div id="progress" style="display: flex; justify-content: space-between; align-items: center;">
+          <div id="patali"></div>
+          <div id="progressbar"></div>
+        </div>
+
         <div class="scoreboard">
           <div class="score-item">गुण: <span id="score">०००</span></div>
           <div class="score-item">सर्वोच्च: <span id="highscore">०००</span></div>
@@ -225,22 +230,6 @@
     </div>
 
     <script>
-     const swars = [
-       { name: "अ", key: "a" },
-       { name: "आ", key: "aa" },
-       { name: "इ", key: "i" },
-       { name: "ई", key: "ee" },
-       { name: "उ", key: "u" },
-       { name: "ऊ", key: "oo" },
-       { name: "ओ", key: "o" },
-       { name: "औ", key: "au" },
-       { name: "ए", key: "e" },
-       { name: "ऐ", key: "ai" },
-       { name: "अं", key: "am" },
-       { name: "अः", key: "ah" },
-       { name: "ऋ", key: "ru" },
-     ];
-
      // Base64 mp3 placeholders (replace later)
 const audioFiles = {
        a: "data:audio/mp3;base64,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",  // base64 of a.mp3
@@ -257,6 +246,22 @@ const audioFiles = {
        ah: "data:audio/mp3;base64,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",  // base64 of ah.mp3
        ru: "data:audio/mp3;base64,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",  // base64 of ru.mp3
      };
+
+     const swars = [
+       { name: "अ", key: "a" },
+       { name: "आ", key: "aa" },
+       { name: "इ", key: "i" },
+       { name: "ई", key: "ee" },
+       { name: "उ", key: "u" },
+       { name: "ऊ", key: "oo" },
+       { name: "ओ", key: "o" },
+       { name: "औ", key: "au" },
+       { name: "ए", key: "e" },
+       { name: "ऐ", key: "ai" },
+       { name: "अं", key: "am" },
+       { name: "अः", key: "ah" },
+       { name: "ऋ", key: "ru" },
+     ];
 
      let score = 0,
          highscore = 0,
@@ -279,17 +284,30 @@ const audioFiles = {
 
      let swarQueue = shuffle([...swars]);
      let level = 1,
-         mistakesMade = false;
+         mistakesMade = false,
+         streak = 0,
+         levelTotalQs = swars.length;
 
-     function newRoundLevel1() {
-       if (swarQueue.length === 0) {
-         swarQueue = shuffle([...swars]); // reset for replay
+     async function newRoundLevel1() {
+       if (mistakesMade) {
+         swarQueue = shuffle([...swars]);
          mistakesMade = false;
        }
-       /* playGameFinishAnimation();
-        * showLevelMessage("Level 1 Completed! 🎯");
-        * launchConfetti(1000); */
+       if (swarQueue.length === 0) {
+         playGameFinishAnimation();
+         showLevelMessage("पहिला टप्पा पार! 🎯");
+         await new Promise(r => setTimeout(r, 2000));
+         level = 2;
+         mistakesMade = false;
+         streak = 0;
+         updateProgress();
+         l2Queue = shuffle([...level2Items]);
+         levelTotalQs = l2Items.length;
+         newRoundLevel2();
+         return;
+       }
        currentSwar = swarQueue.pop();
+       setTimeout(playSound, 300); // short delay to autoplay next question
 
        // short–long vowel (swar) pairs
        const pairs = {
@@ -330,6 +348,28 @@ const audioFiles = {
        });
      }
 
+     function checkAnswerLevel1(answerObj) {
+       document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+
+       if (answerObj.name === currentSwar.name) {
+         streak++;
+         score += 10;
+         if (score > highscore) highscore = score;
+         updateScoreBoard(true);
+         showFeedback(`✔️ ${answerObj.name} बरोबर आहे!`, "green");
+       } else {
+         score = 0;
+         streak = 0;
+         mistakesMade = true;
+         updateScoreBoard(false);
+         showFeedback(`❌ ${answerObj.name} नाही, ${currentSwar.name} आहे.`, "#E65100");
+       }
+       updateProgress();
+       setTimeout(() => {
+         newRoundLevel1();
+       }, lingerTime);
+     }
+
      function playSound() {
        const src = audioFiles[currentSwar.key];
        if (!src) {
@@ -347,26 +387,6 @@ const audioFiles = {
        feedback.style.color = color;
        feedback.classList.add("show");
        setTimeout(() => feedback.classList.remove("show"), lingerTime);
-     }
-
-     function checkAnswerLevel1(answerObj) {
-       document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
-
-       if (answerObj.name === currentSwar.name) {
-         score += 10;
-         if (score > highscore) highscore = score;
-         updateScoreBoard(true);
-         showFeedback(`✔️ ${answerObj.name} बरोबर आहे!`, "green");
-       } else {
-         score = 0;
-         updateScoreBoard(false);
-         showFeedback(`❌ ${answerObj.name} नाही, ${currentSwar.name} आहे.`, "#E65100");
-       }
-
-       setTimeout(() => {
-         newRoundLevel1();
-         setTimeout(playSound, 300); // short delay to autoplay next question
-       }, lingerTime);
      }
 
      function updateScoreBoard(highscoreUpdated) {
@@ -420,6 +440,225 @@ const audioFiles = {
 
      document.getElementById("playBtn").onclick = playSound;
 
+     const level2Items = [
+       { key: "a", emoji: "🍍", word: "अननस", wordm1: "_ननस" },          // ananas
+       { key: "aa", emoji: "🚂", word: "आगगाडी", wordm1: "_गगाडी" },       // steam engine
+       { key: "i", emoji: "🏢", word: "इमारत", wordm1: "_मारत" },          // building
+       { key: "ee", emoji: "🍋", word: "ईडलिंबू", wordm1: "_डलिंबू" },       // lemon/idlimbu
+       { key: "u", emoji: "", word: "उखळ", wordm1: "_खळ" },              // show just "_खळ"
+       { key: "oo", emoji: "⚡", word: "ऊर्जा", wordm1: "_र्जा" },          // oorja — energy
+       { key: "e", emoji: "🐐", word: "एडका", wordm1: "_डका" },           // goat
+       { key: "ai", emoji: "", word: "ऐश्वर्य", wordm1: "_श्वर्य" },          // aiśwarya — no emoji
+       { key: "o", emoji: "👄", word: "ओठ", wordm1: "_ठ" },              // lips
+       { key: "au", emoji: "💊", word: "औषध", wordm1: "_षध" },           // medicine
+       { key: "am", emoji: "💍", word: "अंगठी", wordm1: "_गठी" },          // ring
+       { key: "ru", emoji: "📚", word: "ऋग्वेद", wordm1: "_ग्वेद" },          // book emoji + Rigveda
+     ];
+
+
+     let l2Queue = shuffle([...level2Items]);
+
+     async function newRoundLevel2() {
+       if (mistakesMade) {
+         l2Queue = shuffle([...level2Items]);
+         mistakesMade = false;
+       }
+       if (l2Queue.length === 0) {
+         playGameFinishAnimation();
+         showLevelMessage("दुसरा टप्पा पार! 🎯");
+         await new Promise(r => setTimeout(r, 2000));
+         level = 3;
+         mistakesMade = false;
+         streak = 0;
+         updateProgress();
+         l3Queue = shuffle([...level3Items]);
+         levelTotalQs = l3Items.length;
+         newRoundLevel3();
+         return;
+       }
+       setTimeout(playSound, 300); // short delay to autoplay next question
+       /* launchConfetti(1000); */
+
+       if (l2Queue.length === 0) {
+         l2Queue = shuffle([...level2Items]); // reset for replay
+         mistakesMade = false;
+       }
+       currentSwar = l2Queue.pop();
+
+       let options = [currentSwar];
+
+       while (options.length < 4) {
+         const random = level2Items[Math.floor(Math.random() * level2Items.length)];
+         if (!options.includes(random)) options.push(random);
+       }
+
+       options = shuffle(options);
+       renderOptionsLevel2(options);
+     }
+
+     function renderOptionsLevel2(options) {
+       const optionsDiv = document.getElementById("options");
+       optionsDiv.innerHTML = "";
+       options.forEach((opt) => {
+         const btn = document.createElement("button");
+         btn.className = "option-btn";
+         if (!opt.emoji) {
+           // no emoji → show only wordm1 in large font
+           btn.style.fontSize = "5rem";
+           btn.textContent = opt.wordm1;
+         } else {
+           // emoji present → show emoji + wordm1, smaller font
+           btn.style.fontSize = "3.5rem";
+           btn.innerHTML = `${opt.emoji}<br>${opt.wordm1}`;
+         }
+         btn.onclick = () => checkAnswerLevel2(opt);
+         optionsDiv.appendChild(btn);
+       });
+     }
+
+     function checkAnswerLevel2(answerObj) {
+       document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+
+       if (answerObj.key === currentSwar.key) {
+         streak++;
+         score += 10;
+         if (score > highscore) highscore = score;
+         updateScoreBoard(true);
+         showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+       } else {
+         score = 0;
+         streak = 0;
+         mistakesMade = true;
+         updateScoreBoard(false);
+         showFeedback(`❌ ${answerObj.word} नाही, ${currentSwar.word} आहे.`, "#E65100");
+       }
+       updateProgress();
+
+       setTimeout(() => {
+         newRoundLevel2();
+       }, lingerTime);
+     }
+
+     function updateProgress() {
+       // level label
+       const levelLabel = document.getElementById("patali");
+       levelLabel.innerHTML = "";
+       levelLabel.textContent = `टप्पा क्र. ${toDevanagari(level)}`;
+       levelLabel.style.textAlign = "left";
+       levelLabel.style.fontSize = "1.5rem";
+       levelLabel.style.fontWeight = "bold";
+       levelLabel.style.marginBottom = "0.5rem";
+
+       const bar = document.getElementById("progressbar");
+       bar.innerHTML = "";
+       bar.style.display = "flex";
+       bar.style.flexWrap = "wrap";
+
+       // draw levelTotalQs squares, fill first 'streak' squares
+       for (let i = 0; i < levelTotalQs; i++) {
+         const sq = document.createElement("div");
+         sq.style.width = "18px";
+         sq.style.height = "18px";
+         sq.style.border = "2px solid #ccc";
+         sq.style.borderRadius = "4px";
+         sq.style.transition = "background 0.3s";
+
+         if (i < streak) {
+           sq.style.background = "#FFCC80"; // light orange filled
+           sq.style.borderColor = "#FFB74D";
+         } else {
+           sq.style.background = "transparent"; // hollow
+         }
+
+         bar.appendChild(sq);
+       }
+     }
+
+     const level3Items = [
+       { key: "a", emoji: "🍍", word: "अननस", wordm1: "_ननस" },          // ananas
+       { key: "aa", emoji: "🚂", word: "आगगाडी", wordm1: "_गगाडी" },       // steam engine
+       { key: "i", emoji: "🏢", word: "इमारत", wordm1: "_मारत" },          // building
+       { key: "ee", emoji: "🍋", word: "ईडलिंबू", wordm1: "_डलिंबू" },       // lemon/idlimbu
+       { key: "oo", emoji: "⚡", word: "ऊर्जा", wordm1: "_र्जा" },          // oorja — energy
+       { key: "e", emoji: "🐐", word: "एडका", wordm1: "_डका" },           // goat
+       { key: "o", emoji: "👄", word: "ओठ", wordm1: "_ठ" },              // lips
+       { key: "au", emoji: "💊", word: "औषध", wordm1: "_षध" },           // medicine
+       { key: "am", emoji: "💍", word: "अंगठी", wordm1: "_गठी" },          // ring
+       { key: "ru", emoji: "📚", word: "ऋग्वेद", wordm1: "_ग्वेद" },          // book emoji + Rigveda
+     ];
+     let l3Queue = shuffle([...level3Items]);
+
+     async function newRoundLevel3() {
+       if (mistakesMade) {
+         l3Queue = shuffle([...level3Items]);
+         mistakesMade = false;
+       }
+       if (l3Queue.length === 0) {
+         playGameFinishAnimation();
+         showLevelMessage("शेवटचा टप्पा पार! 🎯");
+         launchConfetti(1000);
+         await new Promise(r => setTimeout(r, 5000));
+         level = 1;
+         mistakesMade = false;
+         streak = 0;
+         updateProgress();
+         swarQueue = shuffle([...swars]);
+         levelTotalQs = swars.length;
+         newRoundLevel1();
+         return;
+       }
+       setTimeout(playSound, 300); // short delay to autoplay next question
+
+       currentSwar = l3Queue.pop();
+
+       let options = [currentSwar];
+
+       while (options.length < 4) {
+         const random = level3Items[Math.floor(Math.random() * level3Items.length)];
+         if (!options.includes(random)) options.push(random);
+       }
+
+       options = shuffle(options);
+       renderOptionsLevel3(options);
+     }
+
+     function renderOptionsLevel3(options) {
+       const optionsDiv = document.getElementById("options");
+       optionsDiv.innerHTML = "";
+       options.forEach((opt) => {
+         const btn = document.createElement("button");
+         btn.className = "option-btn";
+         btn.style.fontSize = "6rem";
+         btn.innerHTML = `${opt.emoji}`;
+         btn.onclick = () => checkAnswerLevel3(opt);
+         optionsDiv.appendChild(btn);
+       });
+     }
+
+     function checkAnswerLevel3(answerObj) {
+       document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+
+       if (answerObj.key === currentSwar.key) {
+         streak++;
+         score += 10;
+         if (score > highscore) highscore = score;
+         updateScoreBoard(true);
+         showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+       } else {
+         score = 0;
+         streak = 0;
+         mistakesMade = true;
+         updateScoreBoard(false);
+         showFeedback(`❌ ${answerObj.word} नाही, ${currentSwar.word} आहे.`, "#E65100");
+       }
+       updateProgress();
+
+       setTimeout(() => {
+         newRoundLevel3();
+       }, lingerTime);
+     }
+
+     updateProgress();
      newRoundLevel1();
     </script>
   </body>
