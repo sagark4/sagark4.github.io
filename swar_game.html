@@ -18,8 +18,8 @@
        display: flex;
        justify-content: center;
        align-items: center;
-       min-height: 100dvh; /* ✅ NEW dynamic vh unit */
-       height: 100dvh;
+       min-height: var(--app-height);
+       height: var(--app-height);
        overflow-x: hidden;
      }
      .game-container {
@@ -694,6 +694,11 @@ const audioFiles = {
 
      updateProgress();
      newRoundLevel1();
+     const setAppHeight = () => {
+       document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+     };
+     window.addEventListener('resize', setAppHeight);
+     setAppHeight();
     </script>
   </body>
 </html>
