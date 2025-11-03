@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>स्वर ओळखा!</title>
     <style>
-     body {
-       background-color: #fff8e1;
+     html, body {
        margin: 0;
+       padding: 0;
+       width: 100%;
        font-family: sans-serif;
+       background-color: #fff8e1;
+     }
+
+     /* Use dynamic viewport units */
+     body {
        display: flex;
        justify-content: center;
        align-items: center;
-       height: 100vh;
-       min-height: 100vh;
-     }     }
-     @supports (-webkit-touch-callout: none) {
-       body {
-         height: -webkit-fill-available;
-         min-height: -webkit-fill-available;
-       }
+       min-height: 100dvh; /* ✅ NEW dynamic vh unit */
+       height: 100dvh;
+       overflow-x: hidden;
      }
      .game-container {
        width: 90%;
