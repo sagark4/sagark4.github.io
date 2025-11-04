@@ -197,10 +197,107 @@
        opacity: 0.5;            /* Reduce opacity */
        pointer-events: none;    /* Disable click interaction */
      }
+     .overlay-screen {
+       position: fixed;
+       inset: 0;
+       background: linear-gradient(to bottom right, #f8f9fa, #e6f7ff);
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 1000;
+     }
+
+     .card {
+       background: white;
+       border-radius: 20px;
+       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+       padding: 40px;
+       text-align: center;
+       max-width: 400px;
+       width: 90%;
+     }
+
+     .card h1 {
+       margin-bottom: 10px;
+     }
+
+     .card input {
+       padding: 10px;
+       width: 80%;
+       font-size: 1.1em;
+       margin-top: 10px;
+       border-radius: 8px;
+       border: 2px solid #ccc;
+     }
+
+     .card button {
+       margin-top: 24px;
+       background: #0056b3; /* darker blue for stronger contrast */
+       color: #ffffff;
+       border: none;
+       border-radius: 12px;
+       padding: 14px 26px;
+       font-size: 1.25em; /* increased font size */
+       font-weight: 600; /* bolder text */
+       cursor: pointer;
+       transition: background 0.3s, transform 0.1s;
+       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+     }
+
+     .card button:hover {
+       background: #003f8a; /* even darker on hover */
+       transform: scale(1.03);
+     }
+
+     .certificate-card {
+       background: linear-gradient(to bottom right, #fffde7, #fff9c4);
+     }
+
+     .stars {
+       font-size: 3em;
+       margin: 20px 0;
+     }
+
+     .star.gold {
+       color: gold;
+     }
+
+     .star.hollow {
+       color: #ccc;
+     }
     </style>
   </head>
   <body>
     <div id="levelMessage" class="level-message"></div>
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay-screen">
+      <div class="card">
+        <h1>मराठी शाळा ऑस्ट्रिया</h1>
+        <h2>स्वर ओळखा खेळ</h2>
+        <h3>तुमचं नाव लिहा:</h3>
+        <input type="text" id="playerName" placeholder="तुमचं नाव" />
+        <button onclick="startGame()">सुरू करा ▶️</button>
+      </div>
+    </div>
+
+    <!-- Certificate Screen -->
+    <div id="certificateScreen" class="overlay-screen" style="display:none;">
+      <div class="card certificate-card">
+        <h1>🏆 स्वर ओळखा प्रमाणपत्र 🏆</h1>
+        <h2 id="certName">विद्यार्थ्याचे नाव</h2>
+
+        <div class="stars">
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+          <!-- <span class="star hollow">☆</span>
+               <span class="star hollow">☆</span> -->
+        </div>
+
+        <p>खूप छान खेळलात!</p>
+        <button onclick="newRoundLevel1()">परत पहिल्यापासून 🔁</button>
+      </div>
+    </div>
     <div class="page-wrapper">
       <div style="text-align: center;">
         मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
@@ -349,6 +446,8 @@
      }
 
      async function newRoundLevel1() {
+       document.getElementById("certificateScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
        playBtn.disabled = false; playBtn.classList.remove("disabled");
        if (mistakesMade) {
          swarQueue = shuffle([...swars]);
@@ -689,7 +788,7 @@
          swarQueue = shuffle([...swars]);
          levelTotalQs = swars.length;
          updateProgress();
-         newRoundLevel1();
+         showCertificate();
          return;
        }
        setTimeout(playSound, 300); // short delay to autoplay next question
@@ -754,8 +853,35 @@
        }, lingerTime);
      }
 
-     updateProgress();
-     newRoundLevel1();
+     let player = { name: "" };
+
+     // Hide the main game initially
+     document.querySelector(".page-wrapper").style.display = "none";
+
+     function startGame() {
+       const nameInput = document.getElementById("playerName");
+       const name = nameInput.value.trim();
+       if (!name) {
+         alert("कृपया तुमचं नाव लिहा!");
+         return;
+       }
+       player.name = name;
+
+       // Hide start screen, show game
+       document.getElementById("startScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       updateProgress();
+       newRoundLevel1();
+     }
+
+     // Call this when the game is over
+     function showCertificate() {
+       document.querySelector(".page-wrapper").style.display = "none";
+       const certScreen = document.getElementById("certificateScreen");
+       certScreen.style.display = "flex";
+       document.getElementById("certName").innerText = player.name;
+     }
+     
     </script>
   </body>
 </html>
