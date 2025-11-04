@@ -18,8 +18,8 @@
        display: flex;
        justify-content: center;
        align-items: center;
-       min-height: var(--app-height);
-       height: var(--app-height);
+       min-height: 100dvh;
+       height: 100dvh;
        overflow-x: hidden;
      }
      .game-container {
@@ -281,6 +281,7 @@
      let score = 0,
          highscore = 0,
          currentSwar,
+         correctBtn,
          audio = new Audio();
 
      const lingerTime = 4000;
@@ -303,6 +304,49 @@
          mistakesMade = false,
          streak = 0,
          levelTotalQs = swars.length;
+
+     function colorButton(btn, correct) {
+       const targetColor = correct ? 'lightgreen' : 'lightcoral';
+       const originalColor = '#fafafa';
+       const steps = 20; // number of fade steps (higher = smoother)
+       const interval = lingerTime / steps;
+
+       // Set initial color
+       btn.style.backgroundColor = targetColor;
+
+       let step = 0;
+       const fade = setInterval(() => {
+         step++;
+         const ratio = step / steps;
+         btn.style.backgroundColor = fadeColor(targetColor, originalColor, ratio);
+
+         if (step >= steps) {
+           clearInterval(fade);
+           btn.style.backgroundColor = originalColor;
+         }
+       }, interval);
+     }
+
+     // Helper function to blend two colors (hex or named) progressively
+     function fadeColor(fromColor, toColor, ratio) {
+       const from = getRGB(fromColor);
+       const to = getRGB(toColor);
+       const r = Math.round(from.r + (to.r - from.r) * ratio);
+       const g = Math.round(from.g + (to.g - from.g) * ratio);
+       const b = Math.round(from.b + (to.b - from.b) * ratio);
+       return `rgb(${r}, ${g}, ${b})`;
+     }
+
+     // Convert named or hex color to RGB
+     function getRGB(color) {
+       const temp = document.createElement('div');
+       temp.style.color = color;
+       document.body.appendChild(temp);
+       const rgb = getComputedStyle(temp).color;
+       document.body.removeChild(temp);
+       const [r, g, b] = rgb.match(/\d+/g).map(Number);
+       return { r, g, b };
+     }
 
      async function newRoundLevel1() {
        playBtn.disabled = false; playBtn.classList.remove("disabled");
@@ -360,12 +404,15 @@
          btn.className = "option-btn";
          btn.style.fontSize = "8rem";
          btn.textContent = opt.name;
-         btn.onclick = () => checkAnswerLevel1(opt);
+         btn.onclick = () => checkAnswerLevel1(opt, btn);
+         if(opt.name === currentSwar.name) {
+           correctBtn = btn;
+         }
          optionsDiv.appendChild(btn);
        });
      }
 
-     function checkAnswerLevel1(answerObj) {
+     function checkAnswerLevel1(answerObj, btn) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
        playBtn.disabled = true; playBtn.classList.add("disabled");
 
@@ -379,12 +426,15 @@
            updateScoreBoard(false);
          }
          showFeedback(`✔️ ${answerObj.name} बरोबर आहे!`, "green");
+         colorButton(btn, true);
        } else {
          score = 0;
          streak = 0;
          mistakesMade = true;
          updateScoreBoard(false);
          showFeedback(`❌ ${answerObj.name} नाही, ${currentSwar.name} आहे.`, "#E65100");
+         colorButton(btn, false);
+         colorButton(correctBtn, true);
        }
        updateProgress();
        setTimeout(() => {
@@ -534,12 +584,15 @@
            btn.style.fontSize = "3.5rem";
            btn.innerHTML = `${opt.emoji}<br>${opt.wordm1}`;
          }
-         btn.onclick = () => checkAnswerLevel2(opt);
+         btn.onclick = () => checkAnswerLevel2(opt, btn);
+         if(opt.name === currentSwar.name) {
+           correctBtn = btn;
+         }
          optionsDiv.appendChild(btn);
        });
      }
 
-     function checkAnswerLevel2(answerObj) {
+     function checkAnswerLevel2(answerObj, btn) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
        playBtn.disabled = true; playBtn.classList.add("disabled");
 
@@ -553,12 +606,15 @@
            updateScoreBoard(false);
          }
          showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+         colorButton(btn, true);
        } else {
          score = 0;
          streak = 0;
          mistakesMade = true;
          updateScoreBoard(false);
          showFeedback(`❌ ${answerObj.word} नाही, ${currentSwar.word} आहे.`, "#E65100");
+         colorButton(btn, false);
+         colorButton(correctBtn, true);
        }
        updateProgress();
 
@@ -659,12 +715,15 @@
          btn.className = "option-btn";
          btn.style.fontSize = "6rem";
          btn.innerHTML = `${opt.emoji}`;
-         btn.onclick = () => checkAnswerLevel3(opt);
+         btn.onclick = () => checkAnswerLevel3(opt, btn);
          optionsDiv.appendChild(btn);
+         if(opt.name === currentSwar.name) {
+           correctBtn = btn;
+         }
        });
      }
 
-     function checkAnswerLevel3(answerObj) {
+     function checkAnswerLevel3(answerObj, btn) {
        document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
        playBtn.disabled = true; playBtn.classList.add("disabled");
 
@@ -678,12 +737,15 @@
            updateScoreBoard(false);
          }
          showFeedback(`✔️ ${answerObj.word} बरोबर आहे!`, "green");
+         colorButton(btn, true);
        } else {
          score = 0;
          streak = 0;
          mistakesMade = true;
          updateScoreBoard(false);
          showFeedback(`❌ ${answerObj.word} नाही, ${currentSwar.word} आहे.`, "#E65100");
+         colorButton(btn, false);
+         colorButton(correctBtn, true);
        }
        updateProgress();
 
@@ -694,17 +756,6 @@
 
      updateProgress();
      newRoundLevel1();
-
-
-     function setAppHeight() {
-       // Use window.visualViewport for iOS Safari reliability
-       const appHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-       document.documentElement.style.setProperty('--app-height', `${appHeight}px`);
-     }
-
-     window.addEventListener('resize', setAppHeight);
-     window.visualViewport?.addEventListener('resize', setAppHeight); // ✅ important for iOS
-     setAppHeight();
     </script>
   </body>
 </html>
