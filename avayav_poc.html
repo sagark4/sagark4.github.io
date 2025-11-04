@@ -41,12 +41,22 @@
 <script>
  /* ear, nose, eye, teeth, tongue, hair, throat, hand, arm, one arm bent so I can point to elbow, fingers, shoulder */
  const points = [
+   { label: "head", x: 575, y: 160, direction: "L" },
    { label: "ear", x: 678, y: 409, direction: "U" },
    { label: "eye", x: 300, y: 300, direction: "R" },
    { label: "nose", x: 350, y: 350, direction: "R" },
    { label: "hair", x: 258, y: 82, direction: "R" },
    { label: "teeth", x: 430, y: 430, direction: "R" },
-   { label: "tongue", x: 480, y: 465, direction: "R" },
+   { label: "tongue", x: 480, y: 465, direction: "L" },
+   { label: "throat", x: 469, y: 552, direction: "R" },
+   { label: "neck", x: 577, y: 513, direction: "L" },
+   { label: "shoulder", x: 623, y: 545, direction: "L" },
+   { label: "hand", x: 115, y: 641, direction: "U" },
+   { label: "elbow", x: 289, y: 745, direction: "U" },
+   { label: "finger", x: 35, y: 526, direction: "D" },
+   { label: "knee", x: 290, y: 950, direction: "R" },
+   { label: "foot", x: 330, y: 1170, direction: "R" },
+   { label: "belly", x: 490, y: 780, direction: "R" },
  ];
 
  const drawnArrows = {};
@@ -101,11 +111,25 @@
 
 <!-- Buttons to toggle arrows -->
 <div style="padding: 10px; text-align: center;">
-  <button onclick="toggleArrow('eye')">डोळा</button>
-  <button onclick="toggleArrow('ear')">कान</button>
-  <button onclick="toggleArrow('nose')">नाक</button>
-  <button onclick="toggleArrow('teeth')">दात</button>
-  <button onclick="toggleArrow('tongue')">जीभ</button>
+  <button onclick="toggleArrow('head')">head</button>
+  <button onclick="toggleArrow('ear')">ear</button>
+  <button onclick="toggleArrow('eye')" >eye</button>
+  <button onclick="toggleArrow('nose')">nose</button>
+  <br>
+  <button onclick="toggleArrow('hair')" >hair</button>
+  <button onclick="toggleArrow('teeth')">teeth</button>
+  <button onclick="toggleArrow('tongue')" >tongue</button>
+  <button onclick="toggleArrow('throat')">throat</button>
+  <br>
+  <button onclick="toggleArrow('neck')" >neck</button>
+  <button onclick="toggleArrow('shoulder')">shoulder</button>
+  <button onclick="toggleArrow('hand')" >hand</button>
+  <button onclick="toggleArrow('elbow')">elbow</button>
+  <br>
+  <button onclick="toggleArrow('finger')" >finger</button>
+  <button onclick="toggleArrow('knee')">knee</button>
+  <button onclick="toggleArrow('foot')" >foot</button>
+  <button onclick="toggleArrow('belly')">belly</button>
 </div>
 
 </body>
