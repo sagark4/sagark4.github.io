@@ -265,6 +265,11 @@
         <h3>तुमचं नाव लिहा:</h3>
         <input type="text" id="playerName" placeholder="तुमचं नाव" />
         <div id="nameError" class="name-error">कृपया तुमचं नाव लिहा!</div>
+        <p style="font-size: 0.9rem; color: #555; margin-top: 0.5rem;">
+          हे नाव फक्त खेळ पूर्ण झाल्यावर प्रमाणपत्रावर दाखवण्यासाठी वापरले जाते.
+          हे कुठेही साठवले जात नाही किंवा सर्व्हरकडे पाठवले जात नाही
+          (<a href="privacy.html" target="_blank" style="color: #0077cc; text-decoration: underline;">गोपनीयता धोरण</a>).
+        </p>
         <button onclick="startGame()">सुरू करा ▶️</button>
       </div>
     </div>
@@ -284,7 +289,7 @@
         <p>खूप छान खेळलात!</p>
         <div id="certDate"></div>
 
-        <button onclick="updateProgress(); newRoundLevel1()">परत पहिल्यापासून 🔁</button>
+        <button onclick="continueGame()">परत पहिल्यापासून 🔁</button>
       </div>
     </div>
 
@@ -885,6 +890,14 @@
          "certDate"
        ).innerText = `दिनांक: ${dateStr} वेळ: ${timeStr}`;
      }     
+     function continueGame() {
+       // Hide start screen, show game
+       document.getElementById("startScreen").style.display = "none";
+       document.getElementById("certificateScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       updateProgress();
+       newRoundLevel1();
+     }
     </script>
   </body>
 </html>
