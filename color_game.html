@@ -130,9 +130,99 @@
        margin-top: 8px;
        font-family: sans-serif;
      }
+     .overlay-screen {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100dvh;
+       background: #fff8e1;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 100;
+     }
+
+     .card {
+       background: white;
+       border-radius: 20px;
+       padding: 2rem;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+       text-align: center;
+       max-width: 400px;
+     }
+
+     .certificate-card {
+       border: 4px solid gold;
+     }
+
+     .card h1 {
+       margin-bottom: 0.5rem;
+     }
+
+     .card h2 {
+       margin-bottom: 1rem;
+     }
+
+     .stars {
+       font-size: 2rem;
+       margin: 1rem 0;
+     }
+
+     .gold {
+       color: gold;
+     }
+
+     .name-error {
+       color: red;
+       font-size: 1rem;
+       margin-top: 0.5rem;
+       display: none;
+     }
+
+     #certDate {
+       margin-top: 1rem;
+       font-size: 1rem;
+       color: #555;
+     }
     </style>
   </head>
   <body>
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay-screen">
+      <div class="card">
+        <h1>मराठी शाळा ऑस्ट्रिया</h1>
+        <h2>रंग ओळखा खेळ</h2>
+        <h3>तुमचं नाव लिहा:</h3>
+        <input type="text" id="playerName" placeholder="तुमचं नाव" />
+        <div id="nameError" class="name-error">कृपया तुमचं नाव लिहा!</div>
+        <p style="font-size: 0.9rem; color: #555; margin-top: 0.5rem;">
+          हे नाव फक्त खेळ पूर्ण झाल्यावर प्रमाणपत्रावर दाखवण्यासाठी वापरले जाते.
+          हे कुठेही साठवले जात नाही किंवा सर्व्हरकडे पाठवले जात नाही
+          (<a href="privacy.html" target="_blank" style="color: #0077cc; text-decoration: underline;">गोपनीयता धोरण</a>).
+        </p>
+        <button onclick="startGame()">सुरू करा ▶️</button>
+      </div>
+    </div>
+
+    <!-- Certificate Screen -->
+    <div id="certificateScreen" class="overlay-screen" style="display:none;">
+      <div class="card certificate-card">
+        <h1>🏆 रंग ओळखा प्रमाणपत्र 🏆</h1>
+        <h2 id="certName">विद्यार्थ्याचे नाव</h2>
+
+        <div class="stars">
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+        </div>
+
+        <p>खूप छान खेळलात!</p>
+        <div id="certDate"></div>
+
+        <button onclick="continueGame();">खेळ चालू ठेवा</button>
+      </div>
+    </div>
     <div class="page-wrapper">
       <div style="text-align: center;">
         मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
@@ -215,7 +305,7 @@
          audio = new Audio();
 
      const lingerTime = 4000;
-
+     const gameBeatScore = 280;
      function toDevanagari(num) {
        return String(num).replace(/[0-9]/g, (d) => "०१२३४५६७८९"[d]);
      }
@@ -323,7 +413,7 @@
   vertical-align: middle;
   border-radius: 4px;"></span> बरोबर!`;
          feedback.style.color = "green";
-     } else {
+       } else {
          score = 0;
          updateScoreBoard(false);
 
@@ -339,13 +429,17 @@
   border-radius: 4px;"></span>`;
          feedback.style.color = "#E65100";
        }
-         feedback.classList.add("show");
-         setTimeout(() => feedback.classList.remove("show"), lingerTime);
+       feedback.classList.add("show");
+       setTimeout(() => feedback.classList.remove("show"), lingerTime);
 
-       // ✅ Auto-start next round after lingerTime
+         // ✅ Auto-start next round after lingerTime
        setTimeout(() => {
-         newRound();
-         setTimeout(playSound, 300); // short delay to autoplay next question
+         if(score == gameBeatScore) {
+           showCertificate();
+         } else {
+           newRound();
+           setTimeout(playSound, 300); // short delay to autoplay next question
+         }
        }, lingerTime);
      }
 
@@ -366,7 +460,56 @@
 
      document.getElementById("playBtn").onclick = playSound;
 
-     newRound();
+     let player = { name: "" };
+
+     // Hide the main game initially
+     document.querySelector(".page-wrapper").style.display = "none";
+
+     function startGame() {
+       const nameInput = document.getElementById("playerName");
+       const name = nameInput.value.trim();
+       const errorDiv = document.getElementById("nameError");
+
+       if (!name) {
+         errorDiv.style.display = "block";
+         return;
+       }
+
+       errorDiv.style.display = "none";
+       player.name = name;
+
+       continueGame();
+     }
+
+     // Call this when the game is over
+     function showCertificate() {
+       document.querySelector(".page-wrapper").style.display = "none";
+       const certScreen = document.getElementById("certificateScreen");
+       certScreen.style.display = "flex";
+       document.getElementById("certName").innerText = player.name;
+
+       const now = new Date();
+       const dateStr = `${toDevanagari(now.getDate())}/${toDevanagari(
+      now.getMonth() + 1
+    )}/${toDevanagari(now.getFullYear())}`;
+       const timeStr = `${toDevanagari(
+      now.getHours().toString().padStart(2, "0")
+    )}:${toDevanagari(now.getMinutes().toString().padStart(2, "0"))}`;
+
+       document.getElementById(
+         "certDate"
+       ).innerText = `दिनांक: ${dateStr} वेळ: ${timeStr}`;
+     }
+
+     function continueGame() {
+       // Hide start screen, show game
+       document.getElementById("startScreen").style.display = "none";
+       document.getElementById("certificateScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       newRound();
+       setTimeout(playSound, 300);       
+     }
+
     </script>
   </body>
 </html>
