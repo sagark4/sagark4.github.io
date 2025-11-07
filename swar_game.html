@@ -199,76 +199,64 @@
      }
      .overlay-screen {
        position: fixed;
-       inset: 0;
-       background: linear-gradient(to bottom right, #f8f9fa, #e6f7ff);
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100dvh;
+       background: #fff8e1;
        display: flex;
        justify-content: center;
        align-items: center;
-       z-index: 1000;
+       z-index: 100;
      }
 
      .card {
        background: white;
        border-radius: 20px;
-       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-       padding: 40px;
+       padding: 2rem;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
        text-align: center;
        max-width: 400px;
-       width: 90%;
-     }
-
-     .card h1 {
-       margin-bottom: 10px;
-     }
-
-     .card input {
-       padding: 10px;
-       width: 80%;
-       font-size: 1.1em;
-       margin-top: 10px;
-       border-radius: 8px;
-       border: 2px solid #ccc;
-     }
-
-     .card button {
-       margin-top: 24px;
-       background: #0056b3; /* darker blue for stronger contrast */
-       color: #ffffff;
-       border: none;
-       border-radius: 12px;
-       padding: 14px 26px;
-       font-size: 1.25em; /* increased font size */
-       font-weight: 600; /* bolder text */
-       cursor: pointer;
-       transition: background 0.3s, transform 0.1s;
-       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-     }
-
-     .card button:hover {
-       background: #003f8a; /* even darker on hover */
-       transform: scale(1.03);
      }
 
      .certificate-card {
-       background: linear-gradient(to bottom right, #fffde7, #fff9c4);
+       border: 4px solid gold;
+     }
+
+     .card h1 {
+       margin-bottom: 0.5rem;
+     }
+
+     .card h2 {
+       margin-bottom: 1rem;
      }
 
      .stars {
-       font-size: 3em;
-       margin: 20px 0;
+       font-size: 2rem;
+       margin: 1rem 0;
      }
 
-     .star.gold {
+     .gold {
        color: gold;
      }
 
-     .star.hollow {
-       color: #ccc;
+     .name-error {
+       color: red;
+       font-size: 1rem;
+       margin-top: 0.5rem;
+       display: none;
+     }
+
+     #certDate {
+       margin-top: 1rem;
+       font-size: 1rem;
+       color: #555;
      }
     </style>
   </head>
   <body>
     <div id="levelMessage" class="level-message"></div>
+
     <!-- Start Screen -->
     <div id="startScreen" class="overlay-screen">
       <div class="card">
@@ -276,6 +264,7 @@
         <h2>स्वर ओळखा खेळ</h2>
         <h3>तुमचं नाव लिहा:</h3>
         <input type="text" id="playerName" placeholder="तुमचं नाव" />
+        <div id="nameError" class="name-error">कृपया तुमचं नाव लिहा!</div>
         <button onclick="startGame()">सुरू करा ▶️</button>
       </div>
     </div>
@@ -290,14 +279,15 @@
           <span class="star gold">★</span>
           <span class="star gold">★</span>
           <span class="star gold">★</span>
-          <!-- <span class="star hollow">☆</span>
-               <span class="star hollow">☆</span> -->
         </div>
 
         <p>खूप छान खेळलात!</p>
-        <button onclick="newRoundLevel1()">परत पहिल्यापासून 🔁</button>
+        <div id="certDate"></div>
+
+        <button onclick="updateProgress(); newRoundLevel1()">परत पहिल्यापासून 🔁</button>
       </div>
     </div>
+
     <div class="page-wrapper">
       <div style="text-align: center;">
         मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
@@ -861,10 +851,14 @@
      function startGame() {
        const nameInput = document.getElementById("playerName");
        const name = nameInput.value.trim();
+       const errorDiv = document.getElementById("nameError");
+
        if (!name) {
-         alert("कृपया तुमचं नाव लिहा!");
+         errorDiv.style.display = "block";
          return;
        }
+
+       errorDiv.style.display = "none";
        player.name = name;
 
        // Hide start screen, show game
@@ -880,8 +874,19 @@
        const certScreen = document.getElementById("certificateScreen");
        certScreen.style.display = "flex";
        document.getElementById("certName").innerText = player.name;
-     }
-     
+
+       const now = new Date();
+       const dateStr = `${toDevanagari(now.getDate())}/${toDevanagari(
+      now.getMonth() + 1
+    )}/${toDevanagari(now.getFullYear())}`;
+       const timeStr = `${toDevanagari(
+      now.getHours().toString().padStart(2, "0")
+    )}:${toDevanagari(now.getMinutes().toString().padStart(2, "0"))}`;
+
+       document.getElementById(
+         "certDate"
+       ).innerText = `दिनांक: ${dateStr} वेळ: ${timeStr}`;
+     }     
     </script>
   </body>
 </html>
