@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="mr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>स्वर ओळखा!</title>
+    <style>
+     html, body {
+       margin: 0;
+       padding: 0;
+       width: 100%;
+       font-family: sans-serif;
+       background-color: #fff8e1;
+     }
+
+     /* Use dynamic viewport units */
+     body {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       min-height: 100dvh;
+       height: 100dvh;
+       overflow-x: hidden;
+     }
+     .game-container {
+       width: 90%;
+       min-width: 400px;
+       height: 80%;
+       background: white;
+       border: 4px solid #444;
+       border-radius: 20px;
+       display: flex;
+       flex-direction: column;
+       justify-content: space-between;
+       padding: 16px;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+     }
+     .scoreboard {
+       display: flex;
+       justify-content: center;
+       gap: 2rem;
+       margin-top: 1rem;
+       font-size: 1.8rem;
+       text-align: center;
+     }
+     .score-item {
+       font-weight: bold;
+     }
+     .score-item span {
+       font-size: 2.2rem;
+       margin-left: 0.5rem;
+     }
+     #feedback {
+       font-size: 2rem;
+       font-weight: bold;
+       text-align: center;
+       min-height: 4rem;
+       margin: 1rem 0 -1rem 0;
+       transition: opacity 0.3s;
+       opacity: 0;
+     }
+     #feedback.show {
+       opacity: 1;
+     }
+     .sound-control {
+       text-align: center;
+       flex: 1;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       margin: 10px;
+     }
+     .sound-buttons {
+       display: flex;
+       align-items: center;
+       gap: 1rem;
+     }
+     button.play-btn {
+       background: #4caf50;
+       border: none;
+       color: white;
+       border-radius: 50%;
+       width: 70px;
+       height: 70px;
+       font-size: 2rem;
+       cursor: pointer;
+       transition: background 0.3s, transform 0.2s;
+     }
+     button.play-btn:hover {
+       background: #43a047;
+       transform: scale(1.05);
+     }
+     input[type="range"] {
+       width: 120px;
+     }
+     .flash {
+       background-color: orange;
+       color: white;
+       padding: 0.2rem 0.5rem;
+       border-radius: 6px;
+       transition: background-color 0.3s, color 0.3s;
+     }
+     @keyframes flashAnim {
+       0% { color: red; transform: scale(1.3); }
+       100% { color: black; transform: scale(1); }
+     }
+
+     .options {
+       display: grid;
+       grid-template-columns: 1fr 1fr;
+       gap: 12px;
+       flex: 1;
+     }
+     .option-btn {
+       border: 2px solid #444;
+       border-radius: 12px;
+       width: 200px;
+       height: 200px;
+       font-weight: bold;
+       padding: 16px;
+       color: #222;
+       background: #fafafa;
+       cursor: pointer;
+       transition: transform 0.1s, background 0.3s;
+     }
+     footer {
+       text-align: center;
+       font-size: 0.8rem;
+       color: #666;
+       margin-top: 8px;
+       font-family: sans-serif;
+     }
+     /* --- Animations --- */
+
+     /* Celebrate animation for game finish */
+     @keyframes celebrate {
+       0% { transform: scale(1) rotate(0deg); background-color: white; }
+       20% { transform: scale(1.1) rotate(2deg); background-color: #fff3e0; }
+       40% { transform: scale(1.15) rotate(-2deg); background-color: #ffecb3; }
+       60% { transform: scale(1.1) rotate(1deg); background-color: #fff3e0; }
+       100% { transform: scale(1) rotate(0deg); background-color: white; }
+     }
+
+     .game-container.celebrate {
+       animation: celebrate 1.5s ease;
+     }
+     /* Floating center message overlay */
+     .level-message {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%) scale(0.9);
+       background: rgba(0, 0, 0, 0.8);
+       color: #fff;
+       font-size: 3rem;
+       font-weight: bold;
+       padding: 1rem 2rem;
+       border-radius: 1rem;
+       text-align: center;
+       opacity: 0;
+       pointer-events: none;
+       transition: opacity 0.4s, transform 0.4s;
+       z-index: 10;
+     }
+
+     .level-message.show {
+       opacity: 1;
+       transform: translate(-50%, -50%) scale(1);
+     }
+     /* --- Confetti animation --- */
+     .confetti {
+       position: fixed;
+       top: -10px;
+       width: 10px;
+       height: 10px;
+       border-radius: 50%;
+       opacity: 0.9;
+       animation: fall 3s linear forwards;
+       z-index: 100;
+     }
+
+     @keyframes fall {
+       0% {
+         transform: translateY(0) rotate(0deg);
+         opacity: 1;
+       }
+       100% {
+         transform: translateY(100vh) rotate(720deg);
+         opacity: 0;
+       }
+     }
+     .disabled {
+       background-color: #ddd;  /* Light gray background */
+       color: #aaa;             /* Light gray text */
+       cursor: not-allowed;     /* Change cursor to "not-allowed" */
+       opacity: 0.5;            /* Reduce opacity */
+       pointer-events: none;    /* Disable click interaction */
+     }
+     .overlay-screen {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100dvh;
+       background: #fff8e1;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 100;
+     }
+
+     .card {
+       background: white;
+       border-radius: 20px;
+       padding: 2rem;
+       box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+       text-align: center;
+       max-width: 400px;
+     }
+
+     .certificate-card {
+       border: 4px solid gold;
+     }
+
+     .card h1 {
+       margin-bottom: 0.5rem;
+     }
+
+     .card h2 {
+       margin-bottom: 1rem;
+     }
+
+     .stars {
+       font-size: 2rem;
+       margin: 1rem 0;
+     }
+
+     .gold {
+       color: gold;
+     }
+
+     .name-error {
+       color: red;
+       font-size: 1rem;
+       margin-top: 0.5rem;
+       display: none;
+     }
+
+     #certDate {
+       margin-top: 1rem;
+       font-size: 1rem;
+       color: #555;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="levelMessage" class="level-message"></div>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay-screen">
+      <div class="card">
+        <h1>मराठी शाळा ऑस्ट्रिया</h1>
+        <h2>स्वर ओळखा खेळ</h2>
+        <h3>तुमचं नाव लिहा:</h3>
+        <input type="text" id="playerName" placeholder="तुमचं नाव" />
+        <div id="nameError" class="name-error">कृपया तुमचं नाव लिहा!</div>
+        <p style="font-size: 0.9rem; color: #555; margin-top: 0.5rem;">
+          हे नाव फक्त खेळ पूर्ण झाल्यावर प्रमाणपत्रावर दाखवण्यासाठी वापरले जाते.
+          हे कुठेही साठवले जात नाही किंवा सर्व्हरकडे पाठवले जात नाही
+          (<a href="privacy.html" target="_blank" style="color: #0077cc; text-decoration: underline;">गोपनीयता धोरण</a>).
+        </p>
+        <button onclick="startGame()">सुरू करा ▶️</button>
+      </div>
+    </div>
+
+    <!-- Certificate Screen -->
+    <div id="certificateScreen" class="overlay-screen" style="display:none;">
+      <div class="card certificate-card">
+        <h1>🏆 स्वर ओळखा प्रमाणपत्र 🏆</h1>
+        <h2 id="certName">विद्यार्थ्याचे नाव</h2>
+
+        <div class="stars">
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+          <span class="star gold">★</span>
+        </div>
+
+        <p>खूप छान खेळलात!</p>
+        <div id="certDate"></div>
+
+        <button onclick="continueGame();">खेळ चालू ठेवा</button>
+      </div>
+    </div>
+
+    <div class="page-wrapper">
+      <div style="text-align: center;">
+        मराठी शाळा ऑस्ट्रिया साठी सागर सुधीर काळे कडून.
+      </div>
+      <div class="game-container">
+        <div style="text-align: center; font-size:200%;">ऐकून स्वर ओळखा!</div>
+        <div id="progress" style="display: flex; justify-content: space-between; align-items: center;">
+          <div id="patali"></div>
+          <div id="progressbar"></div>
+        </div>
+
+        <div class="scoreboard">
+          <div class="score-item">गुण: <span id="score">०००</span></div>
+          <div class="score-item">सर्वोच्च: <span id="highscore">०००</span></div>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div class="sound-control">
+          <div class="sound-buttons">
+            <div style="font-size: 300%">→</div>
+            <button class="play-btn" id="playBtn">🔊</button>
+            <input
+              type="range"
+              id="volume"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.8"
+            />
+          </div>
+        </div>
+
+        <div class="options" id="options"></div>
+      </div>
+      <footer>
+        &copy; 2025 Sagar Kale. |
+        <a href="privacy.html" target="_blank">Privacy Policy</a>
+      </footer>
+    </div>
+
+    <script>
+     // Base64 mp3 placeholders (replace later)
+     const audioFiles = {
+     };
+
+     const swars = [
+       { name: "अ", key: "a" },
+       { name: "आ", key: "aa" },
+       { name: "इ", key: "i" },
+       { name: "ई", key: "ee" },
+       { name: "उ", key: "u" },
+       { name: "ऊ", key: "oo" },
+       { name: "ओ", key: "o" },
+       { name: "औ", key: "au" },
+       { name: "ए", key: "e" },
+       { name: "ऐ", key: "ai" },
+       { name: "अं", key: "am" },
+       { name: "अः", key: "ah" },
+       { name: "ऋ", key: "ru" },
+     ];
+
+     let score = 0,
+         highscore = 0,
+         currentSwar,
+         correctBtn,
+         audio = new Audio();
+
+     const lingerTime = 400;
+     const gameBeatScore = 60;
+
+     const playBtn = document.getElementById("playBtn");
+     function toDevanagari(num) {
+       return String(num).replace(/[0-9]/g, (d) => "०१२३४५६७८९"[d]);
+     }
+
+     function shuffle(arr) {
+       for (let i = arr.length - 1; i > 0; i--) {
+         const j = Math.floor(Math.random() * (i + 1));
+         [arr[i], arr[j]] = [arr[j], arr[i]];
+       }
+       return arr;
+     }
+
+     let swarQueue = shuffle([...swars]);
+     let level = 1,
+         mistakesMade = false,
+         streak = 0,
+         levelTotalQs = swars.length;
+
+     function colorButton(btn, correct) {
+       const targetColor = correct ? 'lightgreen' : 'lightcoral';
+       const originalColor = '#fafafa';
+       const steps = 20; // number of fade steps (higher = smoother)
+       const interval = lingerTime / steps;
+
+       // Set initial color
+       btn.style.backgroundColor = targetColor;
+
+       let step = 0;
+       const fade = setInterval(() => {
+         step++;
+         const ratio = step / steps;
+         btn.style.backgroundColor = fadeColor(targetColor, originalColor, ratio);
+
+         if (step >= steps) {
+           clearInterval(fade);
+           btn.style.backgroundColor = originalColor;
+         }
+       }, interval);
+     }
+
+     // Helper function to blend two colors (hex or named) progressively
+     function fadeColor(fromColor, toColor, ratio) {
+       const from = getRGB(fromColor);
+       const to = getRGB(toColor);
+       const r = Math.round(from.r + (to.r - from.r) * ratio);
+       const g = Math.round(from.g + (to.g - from.g) * ratio);
+       const b = Math.round(from.b + (to.b - from.b) * ratio);
+       return `rgb(${r}, ${g}, ${b})`;
+     }
+
+     // Convert named or hex color to RGB
+     function getRGB(color) {
+       const temp = document.createElement('div');
+       temp.style.color = color;
+       document.body.appendChild(temp);
+       const rgb = getComputedStyle(temp).color;
+       document.body.removeChild(temp);
+       const [r, g, b] = rgb.match(/\d+/g).map(Number);
+       return { r, g, b };
+     }
+
+     async function newRound() {
+       document.getElementById("certificateScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       playBtn.disabled = false; playBtn.classList.remove("disabled");
+       if (mistakesMade) {
+         swarQueue = shuffle([...swars]);
+         mistakesMade = false;
+       }
+       if (swarQueue.length === 0) {
+         swarQueue = shuffle([...swars]);
+       }
+       currentSwar = swarQueue.pop();
+       setTimeout(playSound, 300); // short delay to autoplay next question
+
+       // short–long vowel (swar) pairs
+       const pairs = {
+         i: "ee", ee: "i",
+         u: "oo", oo: "u",
+         e: "ai", ai: "e",
+         o: "au", au: "o",
+       };
+
+       let options = [currentSwar];
+
+       // if currentSwar has a paired counterpart, include it
+       if (pairs[currentSwar.key]) {
+         const pairObj = swars.find(s => s.key === pairs[currentSwar.key]);
+         if (pairObj) options.push(pairObj);
+       }
+
+       // fill remaining slots up to 4
+       while (options.length < 4) {
+         const random = swars[Math.floor(Math.random() * swars.length)];
+         if (!options.includes(random)) options.push(random);
+       }
+
+       options = shuffle(options);
+       renderOptions(options);
+     }
+
+     function renderOptions(options) {
+       const optionsDiv = document.getElementById("options");
+       optionsDiv.innerHTML = "";
+       options.forEach((opt) => {
+         const btn = document.createElement("button");
+         btn.className = "option-btn";
+         btn.style.fontSize = "8rem";
+         btn.textContent = opt.name;
+         btn.onclick = () => checkAnswer(opt, btn);
+         if(opt.name === currentSwar.name) {
+           correctBtn = btn;
+         }
+         optionsDiv.appendChild(btn);
+       });
+     }
+
+     function checkAnswer(answerObj, btn) {
+       document.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+       playBtn.disabled = true; playBtn.classList.add("disabled");
+
+       if (answerObj.name === currentSwar.name) {
+         streak++;
+         score += 10;
+         if (score > highscore) {
+           highscore = score;
+           updateScoreBoard(true);
+         } else {
+           updateScoreBoard(false);
+         }
+         showFeedback(`✔️ ${answerObj.name} बरोबर आहे!`, "green");
+         colorButton(btn, true);
+       } else {
+         score = 0;
+         streak = 0;
+         mistakesMade = true;
+         updateScoreBoard(false);
+         showFeedback(`❌ ${answerObj.name} नाही, ${currentSwar.name} आहे.`, "#E65100");
+         colorButton(btn, false);
+         colorButton(correctBtn, true);
+       }
+       setTimeout(() => {
+         if(score == gameBeatScore) {
+           launchConfetti(1000);
+           showCertificate();
+         } else {
+           newRound();
+           setTimeout(playSound, 300); // short delay to autoplay next question
+         }
+       }, lingerTime);
+     }
+
+     function playSound() {
+       const src = audioFiles[currentSwar.key];
+       if (!src) {
+         console.warn("Audio not loaded for", currentSwar.key);
+         return;
+       }
+       audio.src = src;
+       audio.volume = parseFloat(document.getElementById("volume").value);
+       audio.play();
+     }
+
+     function showFeedback(msg, color) {
+       const feedback = document.getElementById("feedback");
+       feedback.textContent = msg;
+       feedback.style.color = color;
+       feedback.classList.add("show");
+       setTimeout(() => feedback.classList.remove("show"), lingerTime);
+     }
+
+     function updateScoreBoard(highscoreUpdated) {
+       const scoreEl = document.getElementById('score');
+       const highscoreEl = document.getElementById('highscore');
+
+       scoreEl.textContent = toDevanagari(String(score).padStart(3, '0'));
+       scoreEl.classList.add('flash');
+       setTimeout(() => scoreEl.classList.remove('flash'), 1200);
+
+       if (highscoreUpdated) {
+         highscoreEl.textContent = toDevanagari(String(highscore).padStart(3, '0'));
+         highscoreEl.classList.add('flash');
+         setTimeout(() => highscoreEl.classList.remove('flash'), 1200);
+       }
+     }
+
+     const gameContainer = document.querySelector(".game-container");
+
+     function playGameFinishAnimation() {
+       gameContainer.classList.add("celebrate");
+       setTimeout(() => gameContainer.classList.remove("celebrate"), 1500);
+     }
+
+     const levelMessage = document.getElementById("levelMessage");
+
+     function showLevelMessage(text, duration = 2000) {
+       levelMessage.textContent = text;
+       levelMessage.classList.add("show");
+       setTimeout(() => levelMessage.classList.remove("show"), duration);
+     }
+
+     function launchConfetti(count = 60) {
+       const colors = ["#FF4081", "#FFEB3B", "#4CAF50", "#2196F3", "#FF5722", "#9C27B0"];
+       const container = document.body;
+
+       for (let i = 0; i < count; i++) {
+         const confetti = document.createElement("div");
+         confetti.classList.add("confetti");
+         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+         confetti.style.left = Math.random() * 100 + "vw";
+         confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+         confetti.style.width = confetti.style.height = 6 + Math.random() * 6 + "px";
+         confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+         container.appendChild(confetti);
+
+         // remove after animation
+         setTimeout(() => confetti.remove(), 4000);
+       }
+     }
+
+     document.getElementById("playBtn").onclick = playSound;
+
+     let player = { name: "" };
+
+     // Hide the main game initially
+     document.querySelector(".page-wrapper").style.display = "none";
+
+     function startGame() {
+       const nameInput = document.getElementById("playerName");
+       const name = nameInput.value.trim();
+       const errorDiv = document.getElementById("nameError");
+
+       if (!name) {
+         errorDiv.style.display = "block";
+         return;
+       }
+
+       errorDiv.style.display = "none";
+       player.name = name;
+
+       // Hide start screen, show game
+       document.getElementById("startScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       newRound();
+     }
+
+     // Call this when the game is over
+     function showCertificate() {
+       document.querySelector(".page-wrapper").style.display = "none";
+       const certScreen = document.getElementById("certificateScreen");
+       certScreen.style.display = "flex";
+       document.getElementById("certName").innerText = player.name;
+
+       const now = new Date();
+       const dateStr = `${toDevanagari(now.getDate())}/${toDevanagari(
+      now.getMonth() + 1
+    )}/${toDevanagari(now.getFullYear())}`;
+       const timeStr = `${toDevanagari(
+      now.getHours().toString().padStart(2, "0")
+    )}:${toDevanagari(now.getMinutes().toString().padStart(2, "0"))}`;
+
+       document.getElementById(
+         "certDate"
+       ).innerText = `दिनांक: ${dateStr} वेळ: ${timeStr}`;
+     }     
+     function continueGame() {
+       // Hide start screen, show game
+       document.getElementById("startScreen").style.display = "none";
+       document.getElementById("certificateScreen").style.display = "none";
+       document.querySelector(".page-wrapper").style.display = "block";
+       newRound();
+     }
+    </script>
+  </body>
+</html>
