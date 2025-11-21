@@ -24,7 +24,7 @@
      }
      .game-container {
        width: 90%;
-       min-width: 380px;
+       min-width: 400px;
        height: 80%;
        background: white;
        border: 4px solid #444;
@@ -114,8 +114,8 @@
      .option-btn {
        border: 2px solid #444;
        border-radius: 12px;
-       width: 280px;
-       height: 140px;
+       width: 380px;
+       height: 120px;
        font-weight: bold;
        padding: 16px;
        color: #222;
@@ -354,19 +354,19 @@
 
      const chaudakhadi = [
        { name: "क", key: "ka" },
-       { name: "क + ा", key: "kaa" },
-       { name: "ि + क", key: "ki" },
-       { name: "क + ी", key: "kee" },
-       { name: "क + ु", key: "ku" },
-       { name: "क + ू", key: "koo" },
-       { name: "क + े", key: "ke" },
-       { name: "क + ै", key: "kai" },
-       { name: "क + ो", key: "ko" },
-       { name: "क + ौ", key: "kau" },
-       { name: "क + ं", key: "kam" },
-       { name: "क + ः", key: "kah" },
-       { name: "क + ॉ", key: "koa" },
-       { name: "क + ॅ", key: "kae" }
+       { name: "क + ा = का", key: "kaa" },
+       { name: "ि + क = कि", key: "ki" },
+       { name: "क + ी = की", key: "kee" },
+       { name: "क + ु = कु", key: "ku" },
+       { name: "क + ू = कू", key: "koo" },
+       { name: "क + े = के", key: "ke" },
+       { name: "क + ै = कै", key: "kai" },
+       { name: "क + ो = को", key: "ko" },
+       { name: "क + ौ = कौ", key: "kau" },
+       { name: "क + ं = कं", key: "kam" },
+       { name: "क + ः = कः", key: "kah" },
+       { name: "क + ॉ = कॉ", key: "koa" },
+       { name: "क + ॅ = कॅ", key: "kae" }
      ];
 
      let score = 0,
@@ -486,7 +486,7 @@
        options.forEach((opt) => {
          const btn = document.createElement("button");
          btn.className = "option-btn";
-         btn.style.fontSize = "5rem";
+         btn.style.fontSize = "4.5rem";
          btn.textContent = opt.name;
          btn.onclick = () => checkAnswer(opt, btn);
          if(opt.name === currentSwar.name) {
