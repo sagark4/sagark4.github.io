@@ -51,7 +51,7 @@
        margin-left: 0.5rem;
      }
      #feedback {
-       font-size: 2rem;
+       font-size: 1.5rem;
        font-weight: bold;
        text-align: center;
        min-height: 4rem;
@@ -486,7 +486,7 @@
        options.forEach((opt) => {
          const btn = document.createElement("button");
          btn.className = "option-btn";
-         btn.style.fontSize = "4.5rem";
+         btn.style.fontSize = "4rem";
          btn.textContent = opt.name;
          btn.onclick = () => checkAnswer(opt, btn);
          if(opt.name === currentSwar.name) {
