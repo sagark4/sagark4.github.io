@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Instructions</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      text-align: center;
+      width: 100%;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 4vw;
+      margin-bottom: 1rem;
+    }
+    ul {
+      text-align: left;
+      font-size: 3vw;
+      line-height: 1.1;
+      list-style: disc;
+      padding-left: 4rem; /* makes bullets visible */
+      margin-bottom: 2rem;
+    }
+   li {
+     margin-bottom: 1.3em;
+   }
+   button {
+     background: black;
+     color: white;
+     border: 1px solid white;
+     font-family: Arial, Helvetica, sans-serif;
+     font-size: 2.5vw;
+     padding: 0.6rem 1rem;
+     cursor: pointer;
+   }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Anweisungen:</h1>
+
+    <ul>
+      <li>Bitte bleiben Sie <b>ruhig</b> und an Ihrem Platz, bis alle Prüfungen eingesammelt wurden und das Verlassen angekündigt wird.</li>
+      <li>Geben Sie Ihre Prüfung nicht an andere Studierende weiter; nur an eine der Aufsichtspersonen.</li>
+      <li>Achten Sie darauf, nichts zu vergessen, besonders Ihre u:card.</li>
+    </ul>
+
+    <button onclick="toggleFullscreen()">Vollbild</button>
+  </div>
+
+  <script>
+   function toggleFullscreen() {
+     if (!document.fullscreenElement) {
+       document.documentElement.requestFullscreen();
+     } else {
+       document.exitFullscreen();
+     }
+   }
+  </script>
+</body>
+</html>

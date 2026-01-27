@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exam Clock</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: black;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .wrap {
+    text-align: center;
+  }
+  #time {
+    font-size: 18vw;
+    line-height: 1;
+  }
+  .meta {
+    font-size: 6vw;
+    margin-top: 1rem;
+    text-align: right;       /* right aligned */
+    display: inline-block;   /* keeps it compact */
+  }
+  button, a {
+    color: white;
+    background: black;
+    border: 1px solid white;
+    font-family: monospace;
+    font-size: 2vw;
+    padding: 0.4rem 0.6rem;
+    margin-top: 1rem;
+    text-decoration: none;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="font-size:3vw;margin-bottom:0.5rem;">Time Now</div>
+    <div id="time">00:00</div>
+
+    <!-- EDIT THESE BY HAND -->
+    <div class="meta">
+      Start: 09:00<br>
+      End: 12:00
+    </div>
+
+    <br>
+    <button onclick="toggleFullscreen()">fullscreen</button><br>
+    <a href="mg1-post-exam.html">Click here when the time is over.</a>
+  </div>
+
+  <script>
+   function tick() {
+     const d = new Date();
+     const h = String(d.getHours()).padStart(2, '0');
+     const m = String(d.getMinutes()).padStart(2, '0');
+     document.getElementById('time').textContent = h + ':' + m;
+   }
+
+   function toggleFullscreen() {
+     if (!document.fullscreenElement) {
+       document.documentElement.requestFullscreen();
+     } else {
+       document.exitFullscreen();
+     }
+   }
+
+   tick();
+   setInterval(tick, 1000);
+  </script>
+</body>
+</html>
