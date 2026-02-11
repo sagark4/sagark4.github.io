@@ -3,77 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <title>Exam Clock</title>
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
 <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: black;
-    color: white;
-    font-family: monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .wrap {
-    text-align: center;
-  }
-  #time {
-    font-size: 18vw;
-    line-height: 1;
-  }
-  .meta {
-    font-size: 6vw;
-    margin-top: 1rem;
-    text-align: right;       /* right aligned */
-    display: inline-block;   /* keeps it compact */
-  }
-  button, a {
-    color: white;
-    background: black;
-    border: 1px solid white;
-    font-family: monospace;
-    font-size: 2vw;
-    padding: 0.4rem 0.6rem;
-    margin-top: 1rem;
-    text-decoration: none;
-    display: inline-block;
-  }
+ html, body {
+   margin: 0;
+   height: 100%;
+   background: black;
+   color: white;
+   font-family: monospace;
+ }
+
+ .main {
+   width: 95vw;
+   height: 95vh;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+
+ .columns {
+   display: flex;
+   width: 100%;
+   gap: 2rem;
+ }
+
+ .left, .right {
+   flex: 1;
+ }
+
+ .wrap {
+   text-align: center;
+ }
+
+ #time {
+   font-size: 18vw;
+   line-height: 1;
+ }
+
+ .meta {
+   font-size: 4vw;
+   margin-top: 1rem;
+   text-align: right;
+   display: inline-block;
+ }
+
+ button, a {
+   color: white;
+   background: black;
+   border: 1px solid white;
+   font-family: monospace;
+   font-size: 1.4vw;
+   padding: 0.4rem 0.6rem;
+   margin-top: 0.6rem;
+   text-decoration: none;
+   display: inline-block;
+   cursor: pointer;
+ }
+
+ input {
+   background: black;
+   color: white;
+   border: 1px solid white;
+   font-family: monospace;
+   font-size: 1.4vw;
+   padding: 0.3rem;
+   width: 8vw;
+ }
+
+ textarea {
+   width: 100%;
+   height: 45vh;
+   background: black;
+   color: white;
+   border: 1px solid white;
+   font-family: monospace;
+   font-size: 1.2vw;
+   padding: 0.5rem;
+ }
+
+ .right {
+   border-left: 1px solid #444;
+   padding-left: 1rem;
+ }
+
+ #parsedList {
+   margin-top: 1rem;
+   font-size: calc(1.5vw * var(--rightScale));
+   max-height: 70vh;
+   overflow-y: auto;
+ }
+
+ .list-item {
+   margin-bottom: 0.6rem;
+ }
+
+ .list-time {
+   opacity: 0.6;
+   margin-right: 0.8rem;
+ }
+
+ code {
+   background: #111;
+   padding: 0.1rem 0.3rem;
+   border: 1px solid #444;
+   font-size: calc(1em * var(--rightScale));
+ }
+ :root {
+   --rightScale: 1;
+ }
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div style="font-size:3vw;margin-bottom:0.5rem;">Time Now</div>
-    <div id="time">00:00</div>
 
-    <!-- EDIT THESE BY HAND -->
-    <div class="meta">
-      Start: 09:00<br>
-      End: 12:00
-    </div>
+<div class="main">
+<div class="columns">
 
-    <br>
-    <button onclick="toggleFullscreen()">fullscreen</button><br>
-    <a href="mg1-post-exam.html">Click here when the time is over.</a>
+<!-- LEFT COLUMN -->
+<div class="left">
+<div class="wrap">
+
+<div style="font-size:3vw;margin-bottom:0.5rem;">Time Now</div>
+<div id="time">00:00</div>
+
+<div style="margin-top:1rem;font-size:2vw;">
+  Start: <input id="startInput" value="09:00">
+  End: <input id="endInput" value="12:00">
+  <br>
+  <button onclick="applyTimes()">apply times</button>
+</div>
+
+<div class="meta" id="metaDisplay">
+  Start: 09:00<br>
+  End: 12:00
+</div>
+
+<br>
+<button onclick="toggleFullscreen()">fullscreen</button><br>
+<a href="mg1-post-exam.html">Click here when the time is over.</a>
+
+</div>
+</div>
+
+<!-- RIGHT COLUMN -->
+<div class="right">
+
+  <div style="margin-bottom:0.6rem;">
+    Right font size:
+    <input type="range" min="0.6" max="2.5" step="0.1" value="1"
+           oninput="setRightScale(this.value)">
   </div>
+  <button onclick="openEditor()">add formatted list</button>
 
-  <script>
-   function tick() {
-     const d = new Date();
-     const h = String(d.getHours()).padStart(2, '0');
-     const m = String(d.getMinutes()).padStart(2, '0');
-     document.getElementById('time').textContent = h + ':' + m;
+<div id="editorArea" style="display:none;">
+  <textarea id="listText"></textarea>
+  <button onclick="submitList()">submit</button>
+</div>
+
+<div id="parsedList"></div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+ /* ---------------- CLOCK ---------------- */
+
+ function tick() {
+   const d = new Date();
+   const h = String(d.getHours()).padStart(2, '0');
+   const m = String(d.getMinutes()).padStart(2, '0');
+   document.getElementById('time').textContent = h + ':' + m;
+ }
+
+ setInterval(tick, 1000);
+ tick();
+
+ /* ---------------- FULLSCREEN ---------------- */
+
+ function toggleFullscreen() {
+   if (!document.fullscreenElement) {
+     document.documentElement.requestFullscreen();
+   } else {
+     document.exitFullscreen();
    }
+ }
 
-   function toggleFullscreen() {
-     if (!document.fullscreenElement) {
-       document.documentElement.requestFullscreen();
-     } else {
-       document.exitFullscreen();
-     }
+ /* ---------------- TIMES ---------------- */
+
+ function applyTimes() {
+   const s = document.getElementById('startInput').value;
+   const e = document.getElementById('endInput').value;
+   document.getElementById('metaDisplay').innerHTML =
+     "Start: " + s + "<br>End: " + e;
+ }
+
+ /* ---------------- LIST EDITOR ---------------- */
+
+ let savedListText = "";   // persists last submitted text
+
+ function openEditor() {
+   const area = document.getElementById("editorArea");
+   const box = document.getElementById("listText");
+
+   box.value = savedListText;   // restore last text
+   area.style.display = "block";
+   box.focus();
+ }
+
+ function formatInlineCode(text) {
+   return text.replace(/`([^`]+)`/g, "<code>$1</code>");
+ }
+
+ function nowTimeString() {
+   const d = new Date();
+   return String(d.getHours()).padStart(2,'0') + ":" +
+          String(d.getMinutes()).padStart(2,'0');
+ }
+
+ function submitList() {
+   const raw = document.getElementById("listText").value.trim();
+   savedListText = raw;   // save for later editing
+
+   document.getElementById("editorArea").style.display = "none";
+
+   const lines = raw.split(/\n+/);
+   const out = document.getElementById("parsedList");
+   out.innerHTML = "";
+
+   lines.forEach(line => {
+     if (!line.trim()) return;
+
+     const div = document.createElement("div");
+     div.className = "list-item";
+
+     const t = document.createElement("span");
+     t.className = "list-time";
+     t.textContent = nowTimeString();
+
+     const txt = document.createElement("span");
+     txt.innerHTML = formatInlineCode(line);
+
+     div.appendChild(t);
+     div.appendChild(txt);
+     out.appendChild(div);
+   });
+
+   if (window.MathJax) {
+     MathJax.typesetPromise();
    }
+ }
+ function setRightScale(v) {
+   document.documentElement.style.setProperty('--rightScale', v);
+   if (window.MathJax) MathJax.typesetPromise();
+ }
+</script>
 
-   tick();
-   setInterval(tick, 1000);
-  </script>
 </body>
 </html>
