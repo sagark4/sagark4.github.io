@@ -30,14 +30,20 @@ window.MathJax = {
    align-items: center;
  }
 
- .columns {
-   display: flex;
-   width: 100%;
-   gap: 2rem;
- }
+.columns {
+  display: flex;
+  width: 100%;
+  gap: 2rem;
+}
 
- .left, .right {
+.left {
+  width: 500px;     /* ← change this number */
+  flex: 0 0 700px;  /* prevents flex resizing */
+}
+
+ .right {
    flex: 1;
+   min-width: 0;
  }
 
  .wrap {
@@ -45,7 +51,7 @@ window.MathJax = {
  }
 
  #time {
-   font-size: 18vw;
+   font-size: 14vw;
    line-height: 1;
  }
 
