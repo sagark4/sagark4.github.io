@@ -902,9 +902,7 @@ function maskArticle(articleText) {
       answer: ""
     };
   }
-
-  const prefixes =
-    Object.keys(CONFIG.einWords);
+  const prefixes = [...Object.keys(CONFIG.einWords), "eur"];
 
   const prefix = prefixes.find(
     p => articleText.startsWith(p)
@@ -912,7 +910,7 @@ function maskArticle(articleText) {
 
   const visibleLength =
     prefix
-      ? prefix.length - 1
+      ? prefix.length
       : 1;
 
   const visiblePart =
