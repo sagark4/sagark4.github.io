@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>German Declension Speaking Drill</title>
+
+<style>
+  :root {
+    --bg: #fff;
+    --fg: #111;
+    --muted: #777;
+    --line: #ddd;
+    --accent: #c00;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      "Liberation Mono",
+      "Courier New",
+      monospace;
+  }
+
+  main {
+    width: min(760px, calc(100% - 32px));
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 18px 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  h1 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  #stats {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  #card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px 0 60px;
+  }
+
+  #noun {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: .01em;
+  }
+
+  #adjective {
+    font-size: 22px;
+    margin-top: 5px;
+    min-height: 30px;
+  }
+
+  #prompt {
+    font-size: clamp(24px, 5vw, 40px);
+    line-height: 1.4;
+    margin-top: 54px;
+    min-height: 110px;
+  }
+
+  #controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  #controls button {
+    flex: 1;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid var(--fg);
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+    padding: 10px 18px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #f5f5f5;
+  }
+
+  .missing {
+    color: var(--fg);
+  }
+
+  .revealed {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .red {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  @media (max-width: 520px) {
+    #prompt {
+      margin-top: 38px;
+    }
+  }
+</style>
+</head>
+
+<body>
+<main>
+
+  <header>
+    <h1>German Declension Drill</h1>
+    <div id="stats">0 cards · 0.0 s</div>
+  </header>
+
+  <footer>
+    <br/>
+    &copy; 2026 Sagar Kale |
+    <a href="privacy.html" target="_blank">Click here to see the privacy policy</a>
+  </footer>
+  <section id="card" aria-live="polite">
+    <div id="noun"></div>
+    <div id="adjective"></div>
+    <div id="prompt"></div>
+
+    <div id="controls">
+      <button id="reveal">Reveal</button>
+      <button id="next">Next</button>
+    </div>
+
+  </section>
+</main>
+<script>
+
+/*
+  ============================================================
+  EDIT YOUR DATA / SETTINGS HERE
+  ============================================================
+
+  Nothing below this section needs to be edited unless you
+  want to change the behavior of the drill.
+*/
+
+
+/* ------------------------------------------------------------
+   DRILL SETTINGS
+   ------------------------------------------------------------ */
+
+const CONFIG = {
+
+  /*
+    Case probabilities.
+    MUST sum to 1.
+  */
+  cases: {
+    nom: 0.15,
+    akk: 0.4,
+    dat: 0.4,
+    gen: 0.05
+  },
+
+  /*
+    Article probabilities.
+    MUST sum to 1.
+
+    "def"   = definite article
+    "ein"   = ein-type article
+    "ohne"  = no article
+  */
+  articles: {
+    def: 0.5,
+    ein: 0.3,
+    ohne: 0.2
+  },
+
+  /*
+    Weighted distribution of the actual ein-type article.
+
+    MUST sum to 1.
+
+    "ein"  has no plural.
+    The others do.
+  */
+  einWords: {
+    ein: 0.20,
+    kein: 0.15,
+    mein: 0.15,
+    dein: 0.10,
+    sein: 0.10,
+    ihr: 0.10,
+    unser: 0.05,
+    euer: 0.05,
+    Ihr: 0.10
+  },
+
+  /*
+    Probability of plural.
+  */
+  plural: 0.20,
+
+  /*
+    Probability of removing the adjective entirely.
+    0 = always adjective
+    1 = never adjective
+  */
+  noAdjective: 0.9,
+};
+
+
+/* ------------------------------------------------------------
+   NOUNS
+   ------------------------------------------------------------ */
+
+const NOUNS = [
+  "der XXX, die XXXx",
+  "die XXX, die XXXx",
+  "das XXX, die XXXx",
+  // "der Tisch, die Tische",
+  // "der Film, die Filme",
+  // "der Hund, die Hunde",
+  // "die Frage, die Fragen",
+  // "die Antwort, die Antworten",
+  // "die Stadt, die Städte",
+  // "das Gespräch, die Gespräche",
+  // "das Problem, die Probleme",
+  // "das Buch, die Bücher",
+];
+
+
+/* ------------------------------------------------------------
+   ADJECTIVES
+   ------------------------------------------------------------ */
+
+const ADJECTIVES = [
+  "lang",
+  "groß",
+  "klein",
+  "interessant",
+  "schwierig",
+  "wichtig",
+  "neu",
+  "alt",
+  "gut",
+  "schlecht"
+];
+
+
+/* ------------------------------------------------------------
+   SENTENCE TEMPLATES
+   ------------------------------------------------------------ */
+
+const TEMPLATES = [
+
+  // NOMINATIVE
+  { cases:["nom"], text:"{NP} ist/sind" },
+  { cases:["nom"], text:"{NP} ist/sind" },
+  { cases:["nom"], text:"{NP} ist/sind" },
+  { cases:["nom"], text:"{NP} ist/sind" },
+  { cases:["nom"], text:"{NP} war/waren" },
+  { cases:["nom"], text:"{NP} wird/werden" },
+  { cases:["nom"], text:"{NP} gefällt mir." },
+  { cases:["nom"], text:"{NP} gehört ihm." },
+
+  // AKKUSATIVE
+  { cases:["akk"], text:"Es gibt {NP}." },
+  { cases:["akk"], text:"{NP} gibt es." },
+  { cases:["akk"], text:"für {NP}" },
+  { cases:["akk"], text:"ohne {NP}" },
+  { cases:["akk"], text:"bis {NP}" },
+  { cases:["akk"], text:"durch {NP}" },
+  { cases:["akk"], text:"um {NP}" },
+  { cases:["akk"], text:"für {NP}" },
+  { cases:["akk"], text:"für {NP}" },
+  { cases:["akk"], text:"Ich sehe {NP}." },
+  { cases:["akk"], text:"{NP} sehe ich." },
+  { cases:["akk"], text:"Ich mag {NP}." },
+  { cases:["akk"], text:"Ich brauche {NP}." },
+  { cases:["akk"], text:"Ich suche {NP}." },
+  { cases:["akk"], text:"Ich kaufe {NP}." },
+  { cases:["akk"], text:"Ich nehme {NP}." },
+  { cases:["akk"], text:"Ich finde {NP} interessant." },
+  { cases:["akk"], text:"{NP} mag ich." },
+  { cases:["akk"], text:"{NP} brauche ich." },
+  { cases:["akk"], text:"{NP} suche ich." },
+  { cases:["akk"], text:"{NP} kaufe ich." },
+  { cases:["akk"], text:"{NP} nehme ich." },
+  { cases:["akk"], text:"{NP} finde ich interessant." },
+  { cases:["akk"], text:"auf (→ Akk) {NP}" },
+  { cases:["akk"], text:"an (→ Akk) {NP}" },
+  { cases:["akk"], text:"hinter (→ Akk) {NP}" },
+  { cases:["akk"], text:"in (→ Akk) {NP}" },
+  { cases:["akk"], text:"neben (→ Akk) {NP}" },
+  { cases:["akk"], text:"über (→ Akk) {NP}" },
+  { cases:["akk"], text:"unter (→ Akk) {NP}" },
+  { cases:["akk"], text:"vor (→ Akk) {NP}" },
+  { cases:["akk"], text:"zwischen (→ Akk) {NP}" },
+
+  // DATIVE
+  { cases:["dat"], text:"von {NP}" },
+  { cases:["dat"], text:"zu {NP}" },
+  { cases:["dat"], text:"mit {NP}" },
+  { cases:["dat"], text:"bei {NP}" },
+  { cases:["dat"], text:"nach {NP}" },
+  { cases:["dat"], text:"seit {NP}" },
+  { cases:["dat"], text:"aus {NP}" },
+  { cases:["dat"], text:"auf (→ DAT) {NP}" },
+  { cases:["dat"], text:"von {NP}" },
+  { cases:["dat"], text:"zu {NP}" },
+  { cases:["dat"], text:"mit {NP}" },
+  { cases:["dat"], text:"bei {NP}" },
+  { cases:["dat"], text:"nach {NP}" },
+  { cases:["dat"], text:"seit {NP}" },
+  { cases:["dat"], text:"aus {NP}" },
+  { cases:["dat"], text:"von {NP}" },
+  { cases:["dat"], text:"zu {NP}" },
+  { cases:["dat"], text:"mit {NP}" },
+  { cases:["dat"], text:"bei {NP}" },
+  { cases:["dat"], text:"nach {NP}" },
+  { cases:["dat"], text:"seit {NP}" },
+  { cases:["dat"], text:"aus {NP}" },
+  { cases:["dat"], text:"von {NP}" },
+  { cases:["dat"], text:"zu {NP}" },
+  { cases:["dat"], text:"mit {NP}" },
+  { cases:["dat"], text:"bei {NP}" },
+  { cases:["dat"], text:"nach {NP}" },
+  { cases:["dat"], text:"seit {NP}" },
+  { cases:["dat"], text:"aus {NP}" },
+  { cases:["dat"], text:"auf (●DAT) {NP}" },
+  { cases:["dat"], text:"an (●DAT) {NP}" },
+  { cases:["dat"], text:"hinter (●DAT) {NP}" },
+  { cases:["dat"], text:"in (●DAT) {NP}" },
+  { cases:["dat"], text:"neben (●DAT) {NP}" },
+  { cases:["dat"], text:"über (●DAT) {NP}" },
+  { cases:["dat"], text:"unter (●DAT) {NP}" },
+  { cases:["dat"], text:"vor (●DAT) {NP}" },
+  { cases:["dat"], text:"zwischen (●DAT) {NP}" },
+
+  // GENITIVE
+  { cases:["gen"], text:"trotz {NP}" },
+  { cases:["gen"], text:"wegen {NP}" },
+  { cases:["gen"], text:"während {NP}" },
+];
+
+
+/*
+  ============================================================
+  ENGINE
+  ============================================================
+*/
+
+const CASES = ["nom", "akk", "dat", "gen"];
+const ARTICLES = ["def", "ein", "ohne"];
+
+const els = {
+  noun: document.querySelector("#noun"),
+  adjective: document.querySelector("#adjective"),
+  prompt: document.querySelector("#prompt"),
+  reveal: document.querySelector("#reveal"),
+  next: document.querySelector("#next"),
+  stats: document.querySelector("#stats"),
+};
+
+let current = null;
+let revealed = false;
+let startedAt = 0;
+
+let totalResponseMs = 0;
+let responseCount = 0;
+let completedCards = 0;
+
+
+/* ------------------------------------------------------------
+   BASIC HELPERS
+   ------------------------------------------------------------ */
+
+function parseNoun(raw) {
+  const m = raw.trim().match(
+    /^(der|die|das)\s+(.+?)\s*,\s*die\s+(.+)$/i
+  );
+
+  if (!m) {
+    throw new Error('Bad noun format: "' + raw + '"');
+  }
+
+  return {
+    gender: m[1].toLowerCase(),
+    singular: m[2].trim(),
+    plural: m[3].trim()
+  };
+}
+
+
+function choose(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+
+function weightedChoice(items, weights) {
+  const total = weights.reduce((a, b) => a + b, 0);
+
+  let r = Math.random() * total;
+
+  for (let i = 0; i < items.length; i++) {
+    r -= weights[i];
+
+    if (r < 0) {
+      return items[i];
+    }
+  }
+
+  return items[items.length - 1];
+}
+
+
+/* ------------------------------------------------------------
+   VALIDATION
+   ------------------------------------------------------------ */
+
+function validateProbabilities() {
+
+  const caseWeights = CASES.map(k => CONFIG.cases[k]);
+  const articleWeights = ARTICLES.map(a => CONFIG.articles[a]);
+  const einWordWeights = Object.values(CONFIG.einWords);
+
+  const caseSum =
+    caseWeights.reduce((a, b) => a + b, 0);
+
+  const articleSum =
+    articleWeights.reduce((a, b) => a + b, 0);
+
+  const einWordSum =
+    einWordWeights.reduce((a, b) => a + b, 0);
+
+  if (Math.abs(caseSum - 1) > 0.001) {
+    throw new Error(
+      "Case probabilities must sum to 1."
+    );
+  }
+
+  if (Math.abs(articleSum - 1) > 0.001) {
+    throw new Error(
+      "Article probabilities must sum to 1."
+    );
+  }
+
+  if (Math.abs(einWordSum - 1) > 0.001) {
+    throw new Error(
+      "einWords probabilities must sum to 1."
+    );
+  }
+
+  if (CONFIG.plural < 0 || CONFIG.plural > 1) {
+    throw new Error(
+      "Plural probability must be between 0 and 1."
+    );
+  }
+
+  if (CONFIG.noAdjective < 0 || CONFIG.noAdjective > 1) {
+    throw new Error(
+      "noAdjective must be between 0 and 1."
+    );
+  }
+
+  if (!NOUNS.length) {
+    throw new Error("Add at least one noun.");
+  }
+
+  if (!ADJECTIVES.length) {
+    throw new Error("Add at least one adjective.");
+  }
+}
+
+
+/* ------------------------------------------------------------
+   ARTICLE FORMS
+   ------------------------------------------------------------ */
+
+function articleForm(gender, kase, article, plural, einWord) {
+
+  /*
+    Plural:
+      definite -> die / die / den / der
+      ein-type:
+        ein  -> impossible
+        kein -> keine / keine / keinen / keiner
+        mein -> meine / meine / meinen / meiner
+        etc.
+      zero -> ""
+  */
+
+  if (plural) {
+
+    if (article === "def") {
+      return {
+        nom: "die",
+        akk: "die",
+        dat: "den",
+        gen: "der"
+      }[kase];
+    }
+
+    if (article === "ein") {
+
+      if (einWord === "ein") {
+        return "";
+      }
+
+      if (einWord === "euer") {
+        return {
+          nom: "eure",
+          akk: "eure",
+          dat: "euren",
+          gen: "eurer"
+        }[kase];
+      }
+
+      return einWord + {
+        nom: "e",
+        akk: "e",
+        dat: "en",
+        gen: "er"
+      }[kase];
+    }
+
+    return "";
+  }
+
+
+  /*
+    Singular definite article.
+  */
+
+  if (article === "def") {
+
+    const forms = {
+      der: {
+        nom: "der",
+        akk: "den",
+        dat: "dem",
+        gen: "des"
+      },
+
+      die: {
+        nom: "die",
+        akk: "die",
+        dat: "der",
+        gen: "der"
+      },
+
+      das: {
+        nom: "das",
+        akk: "das",
+        dat: "dem",
+        gen: "des"
+      }
+    };
+
+    return forms[gender][kase];
+  }
+
+
+  /*
+    Singular ein-type article.
+
+    Normal:
+      mein + ending
+      kein + ending
+      dein + ending
+      sein + ending
+      ihr + ending
+      unser + ending
+      Ihr + ending
+
+    euer is irregular:
+      euer / euren / eurem / eures
+      eure / eure / eurer / eurer
+  */
+
+  if (article === "ein") {
+
+    if (einWord === "euer") {
+      return {
+        der: {
+          nom: "euer",
+          akk: "euren",
+          dat: "eurem",
+          gen: "eures"
+        },
+
+        die: {
+          nom: "eure",
+          akk: "eure",
+          dat: "eurer",
+          gen: "eurer"
+        },
+
+        das: {
+          nom: "euer",
+          akk: "euer",
+          dat: "eurem",
+          gen: "eures"
+        }
+      }[gender][kase];
+    }
+
+    return einWord + {
+      der: {
+        nom: "",
+        akk: "en",
+        dat: "em",
+        gen: "es"
+      },
+
+      die: {
+        nom: "e",
+        akk: "e",
+        dat: "er",
+        gen: "er"
+      },
+
+      das: {
+        nom: "",
+        akk: "",
+        dat: "em",
+        gen: "es"
+      }
+    }[gender][kase];
+  }
+
+
+  /*
+    Zero article.
+  */
+
+  return "";
+}
+
+
+/* ------------------------------------------------------------
+   ADJECTIVE ENDINGS
+   ------------------------------------------------------------ */
+
+function adjectiveEnding(
+  gender,
+  kase,
+  article,
+  plural,
+  einWord
+) {
+
+  /*
+    Plural adjective endings.
+
+    die großen
+    meine großen
+    große
+    mit großen
+    wegen großer
+  */
+
+  if (plural) {
+
+    // Definite article: die
+    if (article === "def") {
+      return {
+        nom: "en",
+        akk: "en",
+        dat: "en",
+        gen: "en"
+      }[kase];
+    }
+
+    // Ein-type determiner
+    if (article === "ein") {
+
+      // "ein" has no plural
+      if (einWord === "ein") {
+        return null;
+      }
+      // not "ein", so like kein, mein, ihr, ...
+      return {
+        nom: "en",
+        akk: "en",
+        dat: "en",
+        gen: "en"
+      }[kase];
+    }
+
+    // No article: strong plural
+    return {
+      nom: "e",
+      akk: "e",
+      dat: "en",
+      gen: "er"
+    }[kase];
+  }
+
+
+  /*
+    Definite article = weak declension.
+  */
+
+  if (article === "def") {
+
+    return {
+      der: {
+        nom: "e",
+        akk: "en",
+        dat: "en",
+        gen: "en"
+      },
+
+      die: {
+        nom: "e",
+        akk: "e",
+        dat: "en",
+        gen: "en"
+      },
+
+      das: {
+        nom: "e",
+        akk: "e",
+        dat: "en",
+        gen: "en"
+      }
+    }[gender][kase];
+  }
+
+
+  /*
+    Ein-type article = mixed declension.
+  */
+
+  if (article === "ein") {
+
+    return {
+      der: {
+        nom: "er",
+        akk: "en",
+        dat: "en",
+        gen: "en"
+      },
+
+      die: {
+        nom: "e",
+        akk: "e",
+        dat: "en",
+        gen: "en"
+      },
+
+      das: {
+        nom: "es",
+        akk: "es",
+        dat: "en",
+        gen: "en"
+      }
+    }[gender][kase];
+  }
+
+
+  /*
+    No article = strong declension.
+  */
+
+  return {
+    der: {
+      nom: "er",
+      akk: "en",
+      dat: "em",
+      gen: "es"
+    },
+
+    die: {
+      nom: "e",
+      akk: "e",
+      dat: "er",
+      gen: "er"
+    },
+
+    das: {
+      nom: "es",
+      akk: "es",
+      dat: "em",
+      gen: "es"
+    }
+  }[gender][kase];
+}
+
+
+/* ------------------------------------------------------------
+   NOUN FORM
+   ------------------------------------------------------------ */
+
+function nounForm(noun, kase, plural) {
+
+  if (plural) {
+
+    let n = noun.plural;
+
+    /*
+      Dative plural normally gets -n unless the plural
+      already ends in -n or -s.
+    */
+
+    if (
+      kase === "dat" &&
+      !/[ns]$/i.test(n)
+    ) {
+      n += "n";
+    }
+
+    return n;
+  }
+
+
+  /*
+    Genitive masculine/neuter singular.
+
+    This follows your original simplified rule:
+    Tisch -> Tisches
+    Hund -> Hundes
+    Buch -> Buches
+
+    More sophisticated handling could distinguish
+    -s vs -es later.
+  */
+
+  if (
+    kase === "gen" &&
+    (noun.gender === "der" || noun.gender === "das")
+  ) {
+    return noun.singular + "s";
+  }
+
+  return noun.singular;
+}
+
+
+function maskEnding(word, ending) {
+
+  if (!ending) {
+    return {
+      html:
+        escapeHtml(word) +
+        `<span class="missing">_</span>`,
+      answer: escapeHtml(word)
+    };
+  }
+
+  const stemLength =
+    Math.max(0, word.length - ending.length);
+
+  const stem =
+    word.slice(0, stemLength);
+
+  return {
+    html:
+      escapeHtml(stem) +
+      `<span class="missing">_</span>`,
+
+    answer:
+      escapeHtml(stem) +
+      `<span class="revealed">${escapeHtml(ending)}</span>`
+  };
+}
+
+
+function maskArticle(articleText) {
+
+  if (!articleText) {
+    return {
+      html: "",
+      answer: ""
+    };
+  }
+
+  const prefixes =
+    Object.keys(CONFIG.einWords);
+
+  const prefix = prefixes.find(
+    p => articleText.startsWith(p)
+  );
+
+  const visibleLength =
+    prefix
+      ? prefix.length - 1
+      : 1;
+
+  const visiblePart =
+    articleText.slice(0, visibleLength);
+
+  const hiddenPart =
+    articleText.slice(visibleLength);
+
+  return {
+    html:
+      escapeHtml(visiblePart) +
+      `<span class="missing">___</span>`,
+
+    answer:
+      escapeHtml(visiblePart) +
+      `<span class="revealed">${
+        escapeHtml(hiddenPart)
+      }</span>`
+  };
+}
+
+
+function maskNoun(noun, kase, plural) {
+
+  const full = nounForm(
+    noun,
+    kase,
+    plural
+  );
+
+  let ending = "";
+
+  if (plural) {
+
+    /*
+      Only hide the added dative -n because the supplied
+      plural itself is treated as known.
+
+      Example:
+        die Tische -> den Tischen
+                     ^ only n is tested
+    */
+
+    if (
+      kase === "dat" &&
+      !/[ns]$/i.test(noun.plural)
+    ) {
+      ending = "n";
+    }
+
+  } else if (
+    kase === "gen" &&
+    (noun.gender === "der" || noun.gender === "das")
+  ) {
+
+    /*
+      The simplified noun model adds -s.
+    */
+
+    ending = "s";
+  }
+
+  return maskEnding(full, ending);
+}
+
+
+/* ------------------------------------------------------------
+   HTML ESCAPING
+   ------------------------------------------------------------ */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* ------------------------------------------------------------
+   BUILD DISPLAY VERSION
+   ------------------------------------------------------------ */
+
+function buildDisplayNP(card, showAnswer) {
+
+  const articleText =
+    articleForm(
+      card.noun.gender,
+      card.kase,
+      card.article,
+      card.plural,
+      card.einWord
+    );
+
+  const adjectiveEndingText =
+    adjectiveEnding(
+      card.noun.gender,
+      card.kase,
+      card.article,
+      card.plural,
+      card.einWord
+    );
+
+  const adjectiveFull =
+    card.includeAdjective
+      ? card.adjective + adjectiveEndingText
+      : "";
+
+  const nounFull =
+    nounForm(
+      card.noun,
+      card.kase,
+      card.plural
+    );
+
+
+  /*
+    ARTICLE
+  */
+
+  const articlePart =
+    showAnswer
+      ? `<span class="revealed">${escapeHtml(articleText)}</span>`
+      : maskArticle(articleText).html;
+
+
+  /*
+    ADJECTIVE
+
+    Only the ending is hidden.
+    The stem remains visible.
+  */
+
+  let adjectivePart = "";
+
+  if (card.includeAdjective) {
+
+    if (showAnswer) {
+
+      const stem =
+        adjectiveFull.slice(
+          0,
+          adjectiveFull.length -
+          adjectiveEndingText.length
+        );
+
+      adjectivePart =
+        escapeHtml(stem) +
+        `<span class="revealed">${
+          escapeHtml(adjectiveEndingText)
+        }</span>`;
+
+    } else {
+
+      const stem =
+        card.adjective;
+
+      adjectivePart =
+        escapeHtml(stem) +
+        `<span class="missing">___</span>`;
+    }
+  }
+
+
+  /*
+    NOUN
+  */
+
+  let nounPart;
+
+  if (showAnswer) {
+
+    const nounEnding =
+      card.nounEnding;
+
+    if (nounEnding) {
+
+      const stem =
+        nounFull.slice(
+          0,
+          nounFull.length -
+          nounEnding.length
+        );
+
+      nounPart =
+        escapeHtml(stem) +
+        `<span class="revealed">${
+          escapeHtml(nounEnding)
+        }</span>`;
+
+    } else {
+
+      nounPart =
+        escapeHtml(nounFull);
+    }
+
+  } else {
+
+    nounPart =
+      maskNoun(
+        card.noun,
+        card.kase,
+        card.plural
+      ).html;
+  }
+
+
+  return [
+    articlePart,
+    adjectivePart,
+    nounPart
+  ].filter(Boolean).join(" ");
+}
+
+
+/* ------------------------------------------------------------
+   BUILD WHOLE SENTENCE
+   ------------------------------------------------------------ */
+
+function buildDisplaySentence(card, showAnswer) {
+
+  const np =
+    buildDisplayNP(
+      card,
+      showAnswer
+    );
+
+  /*
+    The template contains {NP}, so replacing it with
+    HTML gives us inline reveal behavior while preserving
+    the rest of the sentence.
+  */
+
+  const parts =
+    card.template.text.split("{NP}");
+
+  return (
+    escapeHtml(parts[0]) +
+    np +
+    escapeHtml(parts[1])
+  );
+}
+
+
+/* ------------------------------------------------------------
+   GENERATE CARD
+   ------------------------------------------------------------ */
+
+function generateCard() {
+
+  for (let attempt = 0; attempt < 10000; attempt++) {
+
+    const noun =
+      parseNoun(
+        choose(NOUNS)
+      );
+
+    const kase =
+      weightedChoice(
+        CASES,
+        CASES.map(k => CONFIG.cases[k])
+      );
+
+    const article =
+      weightedChoice(
+        ARTICLES,
+        ARTICLES.map(a => CONFIG.articles[a])
+      );
+
+    /*
+      Only choose an ein-type word when the article type
+      is actually "ein".
+    */
+    const einWord =
+      article === "ein"
+        ? weightedChoice(
+            Object.keys(CONFIG.einWords),
+            Object.values(CONFIG.einWords)
+          )
+        : null;
+
+    const plural = Math.random() < CONFIG.plural;
+
+    /*
+      Plain "ein" does not exist in plural.
+      The other ein-type words do.
+    */
+    if (
+      plural &&
+      article === "ein" &&
+      einWord === "ein"
+    ) {
+      continue;
+    }
+
+    const adjective =
+      choose(ADJECTIVES);
+
+    const includeAdjective =
+      Math.random() >= CONFIG.noAdjective;
+
+    if (
+      !includeAdjective &&
+      article === "ohne"
+    ) {
+      continue;
+    }
+
+
+    const applicable =
+      TEMPLATES.filter(
+        t => t.cases.includes(kase)
+      );
+
+    if (!applicable.length) {
+      throw new Error(
+        "No templates for case: " + kase
+      );
+    }
+
+    const template =
+      choose(applicable);
+
+
+    /*
+      Determine the noun ending that needs to be drilled.
+    */
+
+    let nounEnding = "";
+
+    if (plural) {
+
+      if (
+        kase === "dat" &&
+        !/[ns]$/i.test(noun.plural)
+      ) {
+        nounEnding = "n";
+      }
+
+    } else if (
+      kase === "gen" &&
+      (noun.gender === "der" ||
+       noun.gender === "das")
+    ) {
+      nounEnding = "s";
+    }
+
+
+    return {
+      noun,
+      adjective,
+      kase,
+      article,
+      einWord,
+      plural,
+      includeAdjective,
+      template,
+      nounEnding
+    };
+  }
+
+  throw new Error(
+    "Could not generate a valid card."
+  );
+}
+
+
+/* ------------------------------------------------------------
+   RENDER
+   ------------------------------------------------------------ */
+
+function renderCard() {
+
+  current =
+    generateCard();
+
+  revealed = false;
+
+  startedAt =
+    performance.now();
+
+
+  /*
+    Small metadata at top.
+  */
+
+  els.noun.textContent =
+    (current.plural
+      ? "plural "
+      : "")
+     +
+     current.noun.gender
+     + 
+     " "
+     +
+     current.noun.singular.toUpperCase();
+
+  /*
+    Initial sentence:
+    only the missing endings/articles are masked.
+  */
+
+  els.prompt.innerHTML =
+    buildDisplaySentence(
+      current,
+      false
+    );
+
+
+  els.reveal.focus();
+}
+
+
+/* ------------------------------------------------------------
+   REVEAL
+   ------------------------------------------------------------ */
+
+function reveal() {
+
+  if (
+    !current ||
+    revealed
+  ) {
+    return;
+  }
+
+  revealed = true;
+
+
+  const elapsed =
+    performance.now() -
+    startedAt;
+
+  totalResponseMs += elapsed;
+  responseCount++;
+
+
+  /*
+    Same sentence, but now ONLY the previously missing
+    material is red.
+  */
+
+  els.prompt.innerHTML =
+    buildDisplaySentence(
+      current,
+      true
+    );
+
+
+  updateStats();
+}
+
+
+/* ------------------------------------------------------------
+   NEXT
+   ------------------------------------------------------------ */
+
+function nextCard() {
+
+  if (revealed) {
+
+    completedCards++;
+  }
+
+  renderCard();
+  updateStats();
+}
+
+
+/* ------------------------------------------------------------
+   STATS
+   ------------------------------------------------------------ */
+
+function updateStats() {
+
+  const avg =
+    responseCount
+      ? totalResponseMs /
+        responseCount /
+        1000
+      : 0;
+
+  els.stats.textContent =
+    `${responseCount} revealed · avg ${
+      avg.toFixed(2)
+    } s`;
+}
+
+
+/* ------------------------------------------------------------
+   BUTTONS
+   ------------------------------------------------------------ */
+
+els.reveal.addEventListener(
+  "click",
+  reveal
+);
+
+els.next.addEventListener(
+  "click",
+  nextCard
+);
+
+
+/* ------------------------------------------------------------
+   KEYBOARD
+   ------------------------------------------------------------ */
+
+document.addEventListener(
+  "keydown",
+  e => {
+
+    if (e.code === "Space") {
+
+      e.preventDefault();
+
+      if (!revealed) {
+        reveal();
+      } else {
+        nextCard();
+      }
+
+    } else if (
+      e.key.toLowerCase() === "r"
+    ) {
+
+      reveal();
+
+    } else if (
+      e.key.toLowerCase() === "n"
+    ) {
+
+      nextCard();
+    }
+  }
+);
+
+
+/* ------------------------------------------------------------
+   START
+   ------------------------------------------------------------ */
+
+validateProbabilities();
+renderCard();
+</script>
+</body>
+</html>
