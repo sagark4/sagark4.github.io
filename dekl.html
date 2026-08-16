@@ -902,8 +902,7 @@ function maskArticle(articleText) {
       answer: ""
     };
   }
-  const prefixes = [...Object.keys(CONFIG.einWords), "eur"];
-
+  const prefixes = [...Object.keys(CONFIG.einWords).filter(prefix => prefix !== "euer"), "eu"];
   const prefix = prefixes.find(
     p => articleText.startsWith(p)
   );
